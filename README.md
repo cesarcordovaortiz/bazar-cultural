@@ -1,6 +1,6 @@
 # Bazar Cultural
 
-Frontend de pedidos culturales construido con Vite, React, TypeScript y Tailwind CSS.
+Tienda virtual de productos culturales construida con Vite, React, TypeScript y Tailwind CSS.
 
 ## Requisitos
 
