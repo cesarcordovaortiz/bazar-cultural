@@ -2,6 +2,8 @@
 
 Tienda virtual de productos culturales construida con Vite, React, TypeScript y Tailwind CSS.
 
+La definición funcional, criterios de calidad y hoja de ruta se encuentran en el [PRD del proyecto](docs/PRD.md).
+
 ## Requisitos
 
 - Node.js 20 o superior
