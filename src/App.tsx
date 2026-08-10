@@ -19,7 +19,7 @@ const CampaignsPage = lazy(() => import('./features/campaigns/CampaignsPage').th
 const MessagesPage = lazy(() => import('./features/messaging/MessagesPage').then((module) => ({ default: module.MessagesPage })));
 
 function RouteFallback() {
-  return <main className="mx-auto max-w-6xl px-4 py-12"><div className="h-12 w-56 animate-pulse rounded-2xl bg-slate-200" /><div className="mt-6 grid gap-4 lg:grid-cols-3">{Array.from({ length: 3 }, (_, index) => <div key={index} className="h-64 animate-pulse rounded-3xl bg-slate-200" />)}</div></main>;
+  return <main className="mx-auto max-w-6xl px-4 py-12" aria-busy="true"><h1 className="sr-only">Cargando Bazar Cultural</h1><div aria-hidden="true" className="h-12 w-56 animate-pulse rounded-2xl bg-slate-200" /><div aria-hidden="true" className="mt-6 grid gap-4 lg:grid-cols-3">{Array.from({ length: 3 }, (_, index) => <div key={index} className="h-64 animate-pulse rounded-3xl bg-slate-200" />)}</div></main>;
 }
 
 export default function App() {

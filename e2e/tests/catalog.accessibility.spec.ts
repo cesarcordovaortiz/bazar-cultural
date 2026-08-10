@@ -44,6 +44,7 @@ test('catalog loads an optimized image for each product', async ({ page }) => {
 
 test('catalog has no automatically detectable accessibility violations', async ({ page }) => {
   await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1, name: 'Tienda de experiencias' })).toBeVisible();
 
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
