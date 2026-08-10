@@ -1,0 +1,10 @@
+{
+  "name": "Bazar Cultural",
+  "short_name": "Bazar",
+  "description": "Plataforma de pedidos y experiencias culturales.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#020617",
+  "icons": [{ "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
