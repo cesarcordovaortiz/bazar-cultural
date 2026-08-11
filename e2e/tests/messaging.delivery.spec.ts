@@ -18,7 +18,8 @@ test('physical delivery exposes a route map, delivery chat and satisfaction flow
   await page.getByLabel('Departamento').fill('La Paz');
   await page.getByLabel('Código Postal').fill('0000');
   await page.getByRole('button', { name: 'Confirmar pedido' }).click();
-  const orderLink = page.locator('a[href*="/orders/order-"]').first();
+  await expect(page.getByRole('heading', { name: 'Pedido confirmado' })).toBeVisible();
+  const orderLink = page.getByRole('link', { name: 'Ver seguimiento y mensajes' });
   await orderLink.click();
 
   await expect(page.getByRole('region', { name: 'Seguimiento de delivery' })).toBeVisible();

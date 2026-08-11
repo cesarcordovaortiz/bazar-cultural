@@ -79,11 +79,12 @@ test('digital delivery sends status messages and captures customer satisfaction'
   await page.getByLabel('Departamento').fill('La Paz');
   await page.getByLabel('Código Postal').fill('0000');
   await page.getByRole('button', { name: 'Confirmar pedido' }).click();
-  await expect(page.getByRole('heading', { name: 'Mis pedidos' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pedido confirmado' })).toBeVisible();
 
-  const orderLink = page.locator('a[href*="/orders/order-"]').first();
+  const orderLink = page.getByRole('link', { name: 'Ver seguimiento y mensajes' });
   const orderHref = await orderLink.getAttribute('href');
   expect(orderHref).toBeTruthy();
+  await orderLink.click();
 
   await page.evaluate((profile) => {
     localStorage.setItem('bazar_auth_token', 'mock-token');

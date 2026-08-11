@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useCart } from '../cart/CartContext';
@@ -23,7 +23,6 @@ export function CheckoutPage() {
   const { items, total, subtotal, discount, clear } = useCart();
   const { currency, convertAmount, exchangeRate, formatAmount } = useCurrency();
   const navigate = useNavigate();
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const { user } = useAuth();
   const paymentMethods: PaymentMethod[] = user?.paymentMethods?.length
     ? ensureDefaultPaymentMethod(user.paymentMethods)
@@ -79,8 +78,7 @@ export function CheckoutPage() {
     });
 
     clear();
-    setIsSubmitted(true);
-    navigate('/orders');
+    navigate(`/orders/${orderId}/confirmation`, { replace: true });
   };
 
   return (
@@ -166,7 +164,6 @@ export function CheckoutPage() {
           {currency === 'BOB' && <p className="mt-3 text-xs leading-5 text-orange-100">Conversión referencial del BCB: 1 USD = {formatAmount(exchangeRate.rate, 'BOB')}.</p>}
           <p className="mt-4 text-sm text-slate-400">{items.length} artículos listos para envío</p>
           {digitalItemCount > 0 && <p className="mt-3 rounded-2xl bg-sky-500/10 px-3 py-2 text-sm text-sky-100">Incluye {digitalItemCount} contenido{digitalItemCount === 1 ? '' : 's'} digital{digitalItemCount === 1 ? '' : 'es'} con seguimiento y avisos en Mensajes.</p>}
-          {isSubmitted && <p className="mt-4 rounded-3xl bg-green-500/10 px-4 py-3 text-sm text-green-100">Pedido creado correctamente.</p>}
         </aside>
       </div>
       )}

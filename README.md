@@ -55,6 +55,10 @@ Los productos digitales crean una entrega local con código de seguimiento, even
 
 Las rutas, el avance y la ubicación del delivery son una simulación visual: no representan la localización de una persona. Estos flujos requieren para producción un proveedor de pagos, un servicio de entrega de contenidos, un operador logístico con consentimiento de geolocalización, notificaciones y una API persistente.
 
+## Confirmación de pedido
+
+Al finalizar el checkout se muestra una confirmación persistente con el identificador, fecha, total y modalidad de entrega del pedido. Desde ella se accede directamente al seguimiento, las fases de delivery y la conversación asociada, o al historial de pedidos.
+
 ## Despliegue en GitHub Pages
 
 El workflow [deploy-pages.yml](.github/workflows/deploy-pages.yml) construye y publica la aplicación al hacer *push* a la rama `main`, o al ejecutarlo manualmente.

@@ -38,6 +38,27 @@ test('an active campaign applies its discount throughout the cart and checkout',
   await expect(page.getByText(/USD\s*25,20/)).toBeVisible();
 });
 
+test('checkout confirms a physical order and provides immediate tracking access', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('bazar_auth_token', 'mock-token');
+    localStorage.setItem('bazar_user_profile', JSON.stringify({ id: 'user-1', name: 'Cliente', email: 'cliente@bazar.test', roles: ['customer'] }));
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Añadir' }).first().click();
+  await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: /Carrito/ }).click();
+  await page.getByRole('link', { name: 'Ir al checkout' }).click();
+  await page.getByLabel('Dirección').fill('Calle cultural 123');
+  await page.getByLabel('Ciudad').fill('La Paz');
+  await page.getByLabel('Departamento').fill('La Paz');
+  await page.getByLabel('Código Postal').fill('0000');
+  await page.getByRole('button', { name: 'Confirmar pedido' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Pedido confirmado' })).toBeVisible();
+  await expect(page.getByText('Entrega a domicilio')).toBeVisible();
+  await page.getByRole('link', { name: 'Ver seguimiento y mensajes' }).click();
+  await expect(page.getByRole('region', { name: 'Seguimiento de delivery' })).toBeVisible();
+});
+
 test('checkout redirects an empty cart to the catalog', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('bazar_auth_token', 'mock-token');

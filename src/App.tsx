@@ -14,6 +14,7 @@ const ProfilePage = lazy(() => import('./features/auth/ProfilePage').then((modul
 const CheckoutPage = lazy(() => import('./features/checkout/CheckoutPage').then((module) => ({ default: module.CheckoutPage })));
 const OrderHistoryPage = lazy(() => import('./features/orders/user/OrderHistoryPage').then((module) => ({ default: module.OrderHistoryPage })));
 const OrderDetailPage = lazy(() => import('./features/orders/user/OrderDetailPage').then((module) => ({ default: module.OrderDetailPage })));
+const OrderConfirmationPage = lazy(() => import('./features/orders/user/OrderConfirmationPage').then((module) => ({ default: module.OrderConfirmationPage })));
 const AdminOrdersPage = lazy(() => import('./features/orders/admin/AdminOrdersPage').then((module) => ({ default: module.AdminOrdersPage })));
 const CampaignsPage = lazy(() => import('./features/campaigns/CampaignsPage').then((module) => ({ default: module.CampaignsPage })));
 const MessagesPage = lazy(() => import('./features/messaging/MessagesPage').then((module) => ({ default: module.MessagesPage })));
@@ -44,6 +45,7 @@ export default function App() {
           />
           <Route path="/checkout" element={<AuthGuard><CheckoutPage /></AuthGuard>} />
           <Route path="/orders" element={<AuthGuard><OrderHistoryPage /></AuthGuard>} />
+          <Route path="/orders/:orderId/confirmation" element={<AuthGuard><OrderConfirmationPage /></AuthGuard>} />
           <Route path="/orders/:orderId" element={<AuthGuard><OrderDetailPage /></AuthGuard>} />
           <Route path="/messages" element={<AuthGuard><MessagesPage /></AuthGuard>} />
           <Route path="/admin/orders" element={<AdminGuard><AdminOrdersPage /></AdminGuard>} />
