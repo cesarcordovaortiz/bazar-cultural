@@ -68,6 +68,7 @@ export interface PaymentMethod {
   id: string;
   type: PaymentMethodType;
   label: string;
+  isDefault?: boolean;
   last4?: string;
   holderName?: string;
   cardBrand?: string;

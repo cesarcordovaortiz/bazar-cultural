@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useCart } from '../cart/CartContext';
 import { saveOrder } from '../../lib/orderStore';
 import { useCurrency } from '../currency/CurrencyContext';
-import { getPaymentMethodExample } from '../../lib/paymentMethods';
+import { ensureDefaultPaymentMethod, getPaymentMethodExample } from '../../lib/paymentMethods';
 import { createDigitalDelivery } from '../../lib/digitalDelivery';
 import type { Address, PaymentMethod } from '../../types';
 import { useAuth } from '../auth/useAuth';
@@ -25,7 +25,7 @@ export function CheckoutPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { user } = useAuth();
   const paymentMethods: PaymentMethod[] = user?.paymentMethods?.length
-    ? user.paymentMethods
+    ? ensureDefaultPaymentMethod(user.paymentMethods)
     : [{ id: 'cash', type: 'cash', label: 'Pago contra entrega' }];
 
   const { register, handleSubmit, watch } = useForm<CheckoutForm>({
@@ -35,7 +35,7 @@ export function CheckoutPage() {
       city: user?.defaultAddress?.city ?? '',
       department: user?.defaultAddress?.department ?? '',
       postalCode: user?.defaultAddress?.postalCode ?? '',
-      paymentMethodId: paymentMethods[0]?.id ?? 'cash',
+      paymentMethodId: paymentMethods.find((method) => method.isDefault)?.id ?? paymentMethods[0]?.id ?? 'cash',
     },
   });
   const selectedPaymentMethodId = watch('paymentMethodId');

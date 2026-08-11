@@ -17,3 +17,8 @@ export function buildPaymentMethodLabel(method: Pick<PaymentMethod, 'type' | 'ca
   if (method.type === 'wallet') return `${method.walletProvider || 'Billetera digital'} · ${method.walletPhone || 'número registrado'}`;
   return 'Efectivo contra entrega';
 }
+
+export function ensureDefaultPaymentMethod(methods: PaymentMethod[]): PaymentMethod[] {
+  const defaultId = methods.find((method) => method.isDefault)?.id ?? methods[0]?.id;
+  return methods.map((method) => ({ ...method, isDefault: method.id === defaultId }));
+}

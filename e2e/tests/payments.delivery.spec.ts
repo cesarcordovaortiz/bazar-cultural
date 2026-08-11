@@ -31,6 +31,37 @@ test('profile shows standardized examples for each payment method', async ({ pag
   await expect(page.getByRole('textbox', { name: 'Últimos 4 dígitos' })).toBeVisible();
 });
 
+test('customer manages multiple payment methods and chooses the checkout default', async ({ page }) => {
+  await page.addInitScript((profile) => {
+    localStorage.setItem('bazar_auth_token', 'mock-token');
+    localStorage.setItem('bazar_user_profile', JSON.stringify(profile));
+  }, customerProfile());
+  await page.goto('/#/profile');
+
+  await page.getByLabel('Modalidad').selectOption('transfer');
+  await page.getByRole('textbox', { name: 'Titular de cuenta' }).fill('Cliente Cultural');
+  await page.getByRole('textbox', { name: 'Entidad bancaria' }).fill('Banco Unión');
+  await page.getByRole('textbox', { name: 'Últimos 4 dígitos' }).fill('1234');
+  await page.getByRole('button', { name: 'Añadir método' }).click();
+  await expect(page.getByRole('status')).toContainText('Método de pago agregado');
+  await expect(page.getByLabel('Métodos de pago guardados')).toContainText('Banco Unión ·•••• 1234');
+
+  await page.getByLabel('Modalidad').selectOption('wallet');
+  await page.getByRole('textbox', { name: 'Proveedor' }).fill('Tigo Money');
+  await page.getByRole('textbox', { name: 'Número registrado' }).fill('71234567');
+  await page.getByLabel('Establecer como predeterminado').check();
+  await page.getByRole('button', { name: 'Añadir método' }).click();
+  await expect(page.getByLabel('Métodos de pago guardados')).toContainText('Tigo Money · 71234567');
+  await expect(page.getByLabel('Métodos de pago guardados').getByText('Predeterminado')).toBeVisible();
+
+  await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: /Bazar Cultural/ }).click();
+  await page.getByRole('button', { name: 'Añadir' }).first().click();
+  await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: /Carrito/ }).click();
+  await page.getByRole('link', { name: 'Ir al checkout' }).click();
+  await expect(page.getByLabel('Método de pago')).toHaveValue(/payment-/);
+  await expect(page.getByLabel('Método de pago')).toContainText('Tigo Money · 71234567');
+});
+
 test('digital delivery sends status messages and captures customer satisfaction', async ({ page }) => {
   await page.addInitScript((profile) => {
     localStorage.setItem('bazar_auth_token', 'mock-token');

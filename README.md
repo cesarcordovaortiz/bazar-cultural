@@ -45,7 +45,7 @@ La conversión se informa como referencial, con la fuente y la fecha de vigencia
 
 ## Pagos y entrega digital (demo frontend)
 
-El perfil ofrece campos estandarizados y ejemplos para efectivo contra entrega, transferencia bancaria, billetera digital y tarjeta. Solo se guardan referencias seguras como los últimos cuatro dígitos; nunca números completos, CVV, PIN o contraseñas.
+El perfil permite agregar, retirar y marcar como predeterminado varios métodos de pago con campos estandarizados y ejemplos para efectivo contra entrega, transferencia bancaria, billetera digital y tarjeta. Solo se guardan referencias seguras como los últimos cuatro dígitos; nunca números completos, CVV, PIN o contraseñas. El checkout preselecciona el medio predeterminado.
 
 Los productos digitales crean una entrega local con código de seguimiento, eventos de preparación/envío/confirmación, avisos automáticos en Mensajes y una respuesta de satisfacción del cliente. Estos flujos son demostrativos: para producción requieren un proveedor de pagos, un servicio de entrega de contenidos, notificaciones y una API persistente.
 
