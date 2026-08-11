@@ -21,6 +21,18 @@ test('customer sees active cultural offers on the catalog page', async ({ page }
   await expect(page.getByRole('link', { name: 'Ver productos con oferta antes de que termine' })).toBeVisible();
 });
 
+test('offer carousel shows a campaign image, rotates automatically and can be paused', async ({ page }) => {
+  await page.goto('/');
+
+  const carousel = page.getByRole('region', { name: 'Ofertas vigentes' });
+  const featuredImage = carousel.locator('img');
+  await expect(featuredImage).toHaveCount(1);
+  await expect.poll(() => featuredImage.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
+  await expect(page.getByRole('heading', { name: 'Libros y memorias vivas' })).toBeVisible({ timeout: 8_000 });
+  await page.getByRole('button', { name: 'Pausar carrusel' }).click();
+  await expect(page.getByRole('button', { name: 'Reanudar carrusel' })).toBeVisible();
+});
+
 test('catalog is usable on a mobile viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');

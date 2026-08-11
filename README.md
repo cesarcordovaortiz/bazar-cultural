@@ -43,6 +43,10 @@ npm run sync:exchange-rate
 
 La conversión se informa como referencial, con la fuente y la fecha de vigencia visibles. El importe definitivo de un cobro real debe ser confirmado por el proveedor de pagos y el backend.
 
+## Carrusel de ofertas
+
+Las campañas vigentes se presentan con imágenes de sus productos y rotan automáticamente cada seis segundos. El carrusel se detiene al recibir foco o al pasar el cursor, respeta la preferencia del sistema para reducir movimiento y permite avanzar, retroceder, seleccionar una oferta o pausarlo manualmente. La paleta de alto contraste combina naranja, ámbar y fondos oscuros para destacar las llamadas a la acción sin perder legibilidad.
+
 ## Pagos y entrega digital (demo frontend)
 
 El perfil permite agregar, retirar y marcar como predeterminado varios métodos de pago con campos estandarizados y ejemplos para efectivo contra entrega, transferencia bancaria, billetera digital y tarjeta. Solo se guardan referencias seguras como los últimos cuatro dígitos; nunca números completos, CVV, PIN o contraseñas. El checkout preselecciona el medio predeterminado.
