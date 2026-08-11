@@ -39,6 +39,19 @@ test('demo administrator access opens the campaigns UI', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Campañas culturales' })).toBeVisible();
 });
 
+test('campaign dashboard includes records in every defined state', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('bazar_auth_token', 'mock-token');
+    localStorage.setItem('bazar_user_profile', JSON.stringify({ id: 'admin-1', name: 'Admin', email: 'admin@bazar.test', roles: ['admin'] }));
+  });
+  await page.goto('/#/admin/campaigns');
+
+  await expect(page.getByRole('heading', { name: 'Libros y memorias vivas' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Encuentro de cine comunitario' }).locator('xpath=ancestor::article').getByText('Programada', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Semana de la fotografía' }).locator('xpath=ancestor::article').getByText('Finalizada', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Selección de archivo' }).locator('xpath=ancestor::article').getByText('Inactiva', { exact: true })).toBeVisible();
+});
+
 test('customer can send an order message', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('bazar_orders_v1', JSON.stringify([{
