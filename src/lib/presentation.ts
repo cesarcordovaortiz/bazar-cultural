@@ -1,4 +1,4 @@
-import type { ProductType } from '../types';
+import type { CurrencyCode, ProductType } from '../types';
 
 export const PRODUCT_TYPE_OPTIONS: Array<{ value: ProductType; label: string }> = [
   { value: 'book', label: 'Libros' },
@@ -15,7 +15,7 @@ export function getProductTypeLabel(type: ProductType): string {
   return PRODUCT_TYPE_LABELS[type];
 }
 
-export function formatCurrency(value: number, currency = 'USD'): string {
+export function formatCurrency(value: number, currency: CurrencyCode = 'USD'): string {
   return new Intl.NumberFormat('es-BO', {
     style: 'currency',
     currency,

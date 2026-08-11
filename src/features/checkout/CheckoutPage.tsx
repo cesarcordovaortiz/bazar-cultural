@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useCart } from '../cart/CartContext';
 import { saveOrder } from '../../lib/orderStore';
-import { formatCurrency } from '../../lib/presentation';
+import { useCurrency } from '../currency/CurrencyContext';
+import { getPaymentMethodExample } from '../../lib/paymentMethods';
+import { createDigitalDelivery } from '../../lib/digitalDelivery';
 import type { Address, PaymentMethod } from '../../types';
 import { useAuth } from '../auth/useAuth';
 
@@ -18,6 +20,7 @@ interface CheckoutForm {
 
 export function CheckoutPage() {
   const { items, total, subtotal, discount, clear } = useCart();
+  const { currency, convertAmount, exchangeRate, formatAmount } = useCurrency();
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { user } = useAuth();
@@ -25,7 +28,7 @@ export function CheckoutPage() {
     ? user.paymentMethods
     : [{ id: 'cash', type: 'cash', label: 'Pago contra entrega' }];
 
-  const { register, handleSubmit } = useForm<CheckoutForm>({
+  const { register, handleSubmit, watch } = useForm<CheckoutForm>({
     values: {
       line1: user?.defaultAddress?.line1 ?? '',
       line2: user?.defaultAddress?.line2 ?? '',
@@ -35,8 +38,11 @@ export function CheckoutPage() {
       paymentMethodId: paymentMethods[0]?.id ?? 'cash',
     },
   });
+  const selectedPaymentMethodId = watch('paymentMethodId');
+  const selectedPaymentMethod = paymentMethods.find((method) => method.id === selectedPaymentMethodId) ?? paymentMethods[0];
 
   const orderTotal = useMemo(() => total, [total]);
+  const digitalItemCount = useMemo(() => items.filter((item) => item.product.fulfillmentType === 'digital').reduce((count, item) => count + item.quantity, 0), [items]);
 
   const onSubmit = (values: CheckoutForm) => {
     if (items.length === 0) return;
@@ -48,19 +54,26 @@ export function CheckoutPage() {
       department: values.department,
       postalCode: values.postalCode,
     };
+    const settlementSubtotal = convertAmount(subtotal, 'USD', currency);
+    const settlementDiscount = convertAmount(discount, 'USD', currency);
+    const settlementTotal = convertAmount(orderTotal, 'USD', currency);
 
+    const orderId = `order-${Date.now()}`;
     saveOrder({
-      id: `order-${Date.now()}`,
+      id: orderId,
       userId: user?.id ?? 'guest-user',
       status: 'PENDIENTE',
       createdAt: Date.now(),
-      subtotal,
-      discount,
-      total: orderTotal,
-      currency: 'USD',
+      subtotal: settlementSubtotal,
+      discount: settlementDiscount,
+      total: settlementTotal,
+      currency,
+      sourceCurrency: 'USD',
+      exchangeRateToBob: currency === 'BOB' ? exchangeRate.rate : undefined,
       items,
       address,
       paymentMethod,
+      digitalDelivery: createDigitalDelivery(orderId, items),
     });
 
     clear();
@@ -134,6 +147,7 @@ export function CheckoutPage() {
                 </select>
               </label>
               <p className="mt-3 text-sm text-slate-600">Pago simulado: no se solicita ni almacena información financiera real.</p>
+              {selectedPaymentMethod && <div className="mt-3 rounded-2xl bg-orange-50 p-3 text-sm text-orange-950"><p className="font-semibold">{selectedPaymentMethod.label}</p><p className="mt-1">{getPaymentMethodExample(selectedPaymentMethod.type)}</p></div>}
             </fieldset>
             <button
               type="submit"
@@ -146,8 +160,10 @@ export function CheckoutPage() {
 
         <aside className="rounded-3xl bg-slate-950 p-8 text-white shadow-sm">
           <h2 className="text-xl font-semibold">Resumen</h2>
-          <dl className="mt-4 space-y-3 text-sm"><div className="flex justify-between gap-4"><dt className="text-slate-300">Subtotal</dt><dd className="font-semibold">{formatCurrency(subtotal)}</dd></div>{discount > 0 && <div className="flex justify-between gap-4 text-orange-200"><dt>Descuento de campañas</dt><dd className="font-semibold">−{formatCurrency(discount)}</dd></div>}<div className="border-t border-white/20 pt-3"><dt className="text-slate-300">Total del carrito</dt><dd className="mt-1 text-4xl font-semibold">{formatCurrency(orderTotal)}</dd></div></dl>
+          <dl className="mt-4 space-y-3 text-sm"><div className="flex justify-between gap-4"><dt className="text-slate-300">Subtotal</dt><dd className="font-semibold">{formatAmount(subtotal)}</dd></div>{discount > 0 && <div className="flex justify-between gap-4 text-orange-200"><dt>Descuento de campañas</dt><dd className="font-semibold">−{formatAmount(discount)}</dd></div>}<div className="border-t border-white/20 pt-3"><dt className="text-slate-300">Total del carrito</dt><dd className="mt-1 text-4xl font-semibold">{formatAmount(orderTotal)}</dd></div></dl>
+          {currency === 'BOB' && <p className="mt-3 text-xs leading-5 text-orange-100">Conversión referencial del BCB: 1 USD = {formatAmount(exchangeRate.rate, 'BOB')}.</p>}
           <p className="mt-4 text-sm text-slate-400">{items.length} artículos listos para envío</p>
+          {digitalItemCount > 0 && <p className="mt-3 rounded-2xl bg-sky-500/10 px-3 py-2 text-sm text-sky-100">Incluye {digitalItemCount} contenido{digitalItemCount === 1 ? '' : 's'} digital{digitalItemCount === 1 ? '' : 'es'} con seguimiento y avisos en Mensajes.</p>}
           {isSubmitted && <p className="mt-4 rounded-3xl bg-green-500/10 px-4 py-3 text-sm text-green-100">Pedido creado correctamente.</p>}
         </aside>
       </div>

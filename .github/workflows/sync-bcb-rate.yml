@@ -1,0 +1,37 @@
+name: Sync BCB exchange rate
+
+on:
+  schedule:
+    - cron: '15 12 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bcb-exchange-rate
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Read official BCB exchange rate
+        run: node scripts/sync-bcb-rate.mjs
+      - name: Commit updated rate
+        run: |
+          if git diff --quiet -- public/exchange-rate.json; then
+            echo "No official rate changes to publish."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/exchange-rate.json
+          git commit -m "Actualizar tipo de cambio oficial BCB"
+          git push

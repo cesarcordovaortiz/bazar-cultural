@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { readOrders, subscribeOrders } from '../../../lib/orderStore';
-import { formatCurrency } from '../../../lib/presentation';
+import { useCurrency } from '../../currency/CurrencyContext';
 import type { Order } from '../../../types';
 
 export function OrderHistoryPage() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const { formatAmount } = useCurrency();
 
   useEffect(() => {
     const refresh = (): void => setOrders(readOrders());
@@ -32,7 +33,7 @@ export function OrderHistoryPage() {
                 </div>
                 <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
                   <span>{order.items.length} artículos</span>
-                  <span>Total {formatCurrency(order.total, order.currency)}</span>
+                  <span>Total {formatAmount(order.total, order.currency)}</span>
                 </div>
               </Link>
             ))

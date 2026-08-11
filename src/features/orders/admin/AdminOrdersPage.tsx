@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FixedSizeList as List } from 'react-window';
 import { readOrders, subscribeOrders, updateOrderStatus } from '../../../lib/orderStore';
-import { formatCurrency } from '../../../lib/presentation';
+import { useCurrency } from '../../currency/CurrencyContext';
 import type { Order, OrderStatus } from '../../../types';
 
 const STATUS_FILTERS: OrderStatus[] = ['PENDIENTE', 'ACEPTADO', 'EN_CAMINO', 'ENTREGADO', 'CANCELADO'];
@@ -16,6 +16,7 @@ export function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [sort, setSort] = useState<SortOption>('newest');
   const [page, setPage] = useState(1);
+  const { formatAmount } = useCurrency();
 
   useEffect(() => {
     const refresh = (): void => setOrders(readOrders());
@@ -125,7 +126,7 @@ export function AdminOrdersPage() {
                   <p className="text-sm text-slate-600">Usuario {order.userId}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">{formatCurrency(order.total)}</span>
+                  <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">{formatAmount(order.total, order.currency)}</span>
                   <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">{order.status}</span>
                   <label className="sr-only" htmlFor={`order-status-${order.id}`}>Estado del pedido {order.id}</label>
                   <select id={`order-status-${order.id}`} value={order.status} onChange={(event) => handleStatusUpdate(order.id, event.target.value as OrderStatus)} className="rounded-full border border-slate-300 bg-white px-3 py-1 text-sm font-semibold text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500">

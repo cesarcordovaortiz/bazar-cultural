@@ -2,11 +2,13 @@ import { Link, useParams } from 'react-router-dom';
 import { useCart } from '../cart/CartContext';
 import { useProducts } from './useProducts';
 import { getProductPricing } from '../../lib/pricing';
-import { formatCurrency, getProductTypeLabel } from '../../lib/presentation';
+import { getProductTypeLabel } from '../../lib/presentation';
+import { useCurrency } from '../currency/CurrencyContext';
 
 export function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
   const { addProduct, activeCampaigns } = useCart();
+  const { formatAmount } = useCurrency();
   const { data: products = [], isLoading } = useProducts();
   const product = products.find((item) => item.id === productId);
   const pricing = product ? getProductPricing(product, activeCampaigns) : null;
@@ -24,7 +26,8 @@ export function ProductDetailPage() {
           <h1 className="mt-2 text-3xl font-semibold text-slate-950">{product.name}</h1>
           <p className="mt-4 leading-7 text-slate-600">{product.description}</p>
           <div className="mt-5 flex flex-wrap gap-2">{product.tags.map((tag) => <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">{tag}</span>)}</div>
-          <div className="mt-8"><p className="text-3xl font-semibold text-slate-950">{pricing && formatCurrency(pricing.finalPrice, product.currency)}</p>{pricing?.campaign && <><p className="mt-1 text-sm font-semibold text-orange-800">{pricing.discountPercent}% de descuento · {pricing.campaign.name}</p><p className="mt-1 text-sm text-slate-500 line-through">Precio habitual: {formatCurrency(pricing.originalPrice, product.currency)}</p></>}</div>
+          {product.fulfillmentType === 'digital' && <p className="mt-5 rounded-2xl bg-sky-50 px-4 py-3 text-sm font-medium text-sky-900">Contenido digital: después de confirmar el pedido podrás seguir la preparación y entrega del acceso desde tus pedidos.</p>}
+          <div className="mt-8"><p className="text-3xl font-semibold text-slate-950">{pricing && formatAmount(pricing.finalPrice, product.currency)}</p>{pricing?.campaign && <><p className="mt-1 text-sm font-semibold text-orange-800">{pricing.discountPercent}% de descuento · {pricing.campaign.name}</p><p className="mt-1 text-sm text-slate-500 line-through">Precio habitual: {formatAmount(pricing.originalPrice, product.currency)}</p></>}</div>
           <p className="mt-2 text-sm text-slate-600">{product.inventory} unidades disponibles</p>
           <button type="button" disabled={product.inventory === 0} onClick={() => addProduct(product)} className="mt-6 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500">{product.inventory === 0 ? 'Agotado' : 'Añadir al carrito'}</button>
         </div>

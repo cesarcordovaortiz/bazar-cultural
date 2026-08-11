@@ -31,6 +31,24 @@ npm run preview
 
 Las pruebas E2E cubren los flujos de catálogo, carrito, checkout, pedidos administrativos, campañas y mensajería. Incluyen una auditoría automatizada de accesibilidad Axe sobre el catálogo y una comprobación de visualización móvil.
 
+## Moneda y cotización oficial BCB
+
+Los precios de catálogo se mantienen en USD y la interfaz permite visualizarlos también en bolivianos (BOB/Bs). La conversión usa la cotización oficial del dólar estadounidense publicada por el Banco Central de Bolivia (BCB).
+
+GitHub Pages no puede consultar directamente el sitio del BCB desde el navegador porque esa fuente no habilita CORS. Por ello, el workflow [sync-bcb-rate.yml](.github/workflows/sync-bcb-rate.yml) consulta y valida la publicación oficial cada día hábil, y publica el resultado como `exchange-rate.json` en el mismo sitio estático. También puede ejecutarse manualmente o de forma local:
+
+```bash
+npm run sync:exchange-rate
+```
+
+La conversión se informa como referencial, con la fuente y la fecha de vigencia visibles. El importe definitivo de un cobro real debe ser confirmado por el proveedor de pagos y el backend.
+
+## Pagos y entrega digital (demo frontend)
+
+El perfil ofrece campos estandarizados y ejemplos para efectivo contra entrega, transferencia bancaria, billetera digital y tarjeta. Solo se guardan referencias seguras como los últimos cuatro dígitos; nunca números completos, CVV, PIN o contraseñas.
+
+Los productos digitales crean una entrega local con código de seguimiento, eventos de preparación/envío/confirmación, avisos automáticos en Mensajes y una respuesta de satisfacción del cliente. Estos flujos son demostrativos: para producción requieren un proveedor de pagos, un servicio de entrega de contenidos, notificaciones y una API persistente.
+
 ## Despliegue en GitHub Pages
 
 El workflow [deploy-pages.yml](.github/workflows/deploy-pages.yml) construye y publica la aplicación al hacer *push* a la rama `main`, o al ejecutarlo manualmente.

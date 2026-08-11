@@ -5,6 +5,7 @@ import { useProducts } from '../catalog/useProducts';
 import { getProductPricing } from '../../lib/pricing';
 import { formatCurrency, PRODUCT_TYPE_OPTIONS } from '../../lib/presentation';
 import { useActiveCampaigns } from '../campaigns/useActiveCampaigns';
+import { useCurrency } from '../currency/CurrencyContext';
 import type { ProductType } from '../../types';
 
 const PRODUCT_TYPES: Array<{ value: ProductType | 'all'; label: string }> = [{ value: 'all', label: 'Todos' }, ...PRODUCT_TYPE_OPTIONS];
@@ -16,6 +17,7 @@ export function ShopPage() {
   const [type, setType] = useState<ProductType | 'all'>('all');
   const [activeOfferIndex, setActiveOfferIndex] = useState(0);
   const activeCampaigns = useActiveCampaigns();
+  const { currency, exchangeRate, exchangeRateError, formatAmount } = useCurrency();
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const filteredProducts = useMemo(() => products.filter((product) => {
@@ -44,10 +46,12 @@ export function ShopPage() {
           >
             <p className="text-xs uppercase tracking-[0.2em] text-orange-100">Carrito</p>
             <p className="text-xl font-semibold">{itemCount} artículos</p>
-            <p className="text-sm text-orange-50">Total {formatCurrency(total)}</p>
+            <p className="text-sm text-orange-50">Total {formatAmount(total)}</p>
           </Link>
         </div>
       </section>
+
+      <p className="mb-6 rounded-2xl border border-orange-200 bg-white/80 px-4 py-3 text-sm text-stone-700">Precios mostrados en <strong>{currency === 'BOB' ? 'bolivianos (Bs)' : 'dólares estadounidenses (USD)'}</strong>. 1 USD = {formatCurrency(exchangeRate.rate, 'BOB')} según el <a href={exchangeRate.source.url} target="_blank" rel="noreferrer" className="font-semibold text-orange-800 underline underline-offset-4">Banco Central de Bolivia</a>{exchangeRate.effectiveDate ? `, vigente desde el ${exchangeRate.effectiveDate}` : ''}.{exchangeRateError && ' Se muestra la última cotización disponible.'}</p>
 
       {activeOffer && <section aria-label="Ofertas vigentes" aria-roledescription="carrusel" className="mb-6 overflow-hidden rounded-3xl border border-orange-200 bg-orange-100/70 shadow-sm">
         <div className="grid lg:grid-cols-[1.25fr_0.75fr]">
@@ -84,11 +88,12 @@ export function ShopPage() {
               <h2 className="text-xl font-semibold text-slate-950">{product.name}</h2>
               <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-800">{product.currency}</span>
             </div>
+            {product.fulfillmentType === 'digital' && <p className="mb-3 inline-flex rounded-full bg-sky-100 px-3 py-1 text-xs font-bold text-sky-800">Entrega digital con seguimiento</p>}
             {pricing.campaign && <p className="mb-3 inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-orange-800">{pricing.discountPercent}% de descuento · {pricing.campaign.name}</p>}
             <p className="mb-5 text-sm leading-6 text-slate-600">{product.description}</p>
             <Link to={`/products/${product.id}`} className="mb-5 inline-flex text-sm font-semibold text-orange-800 underline underline-offset-4 transition hover:text-orange-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600">Ver detalle</Link>
             <div className="flex items-center justify-between gap-3">
-              <span className="flex flex-col"><span className="text-2xl font-semibold text-slate-900">{formatCurrency(pricing.finalPrice, product.currency)}</span>{pricing.campaign && <span className="text-sm text-stone-500 line-through">{formatCurrency(pricing.originalPrice, product.currency)}</span>}</span>
+              <span className="flex flex-col"><span className="text-2xl font-semibold text-slate-900">{formatAmount(pricing.finalPrice, product.currency)}</span>{pricing.campaign && <span className="text-sm text-stone-500 line-through">{formatAmount(pricing.originalPrice, product.currency)}</span>}</span>
               <button
                 type="button"
                 onClick={() => addProduct(product)}
