@@ -6,7 +6,9 @@ import { OrderMessages } from '../../messaging/OrderMessages';
 import { useAuth } from '../../auth/useAuth';
 import { useCurrency } from '../../currency/CurrencyContext';
 import { getDigitalDeliveryStatusLabel, recordDeliverySatisfaction, updateDigitalDeliveryStatus } from '../../../lib/digitalDelivery';
-import type { DigitalDeliveryStatus } from '../../../types';
+import { recordPhysicalDeliverySatisfaction, updatePhysicalDeliveryStatus } from '../../../lib/physicalDelivery';
+import { PhysicalDeliveryTracking } from '../../delivery/PhysicalDeliveryTracking';
+import type { DigitalDeliveryStatus, PhysicalDeliveryStatus } from '../../../types';
 
 export function OrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
@@ -23,8 +25,12 @@ export function OrderDetailPage() {
       navigate('/orders');
       return;
     }
+    if (!isAdmin && current.userId !== user?.id) {
+      navigate('/orders');
+      return;
+    }
     setOrder(current);
-  }, [orderId, navigate]);
+  }, [orderId, navigate, isAdmin, user?.id]);
 
   if (!order) {
     return null;
@@ -41,6 +47,14 @@ export function OrderDetailPage() {
 
   const handleDeliverySatisfaction = (satisfaction: 'SATISFECHO' | 'REQUIERE_AYUDA'): void => {
     setOrder(recordDeliverySatisfaction(order.id, satisfaction));
+  };
+
+  const handlePhysicalDeliveryStatus = (status: PhysicalDeliveryStatus): void => {
+    setOrder(updatePhysicalDeliveryStatus(order.id, status));
+  };
+
+  const handlePhysicalDeliverySatisfaction = (satisfaction: 'SATISFECHO' | 'REQUIERE_AYUDA'): void => {
+    setOrder(recordPhysicalDeliverySatisfaction(order.id, satisfaction));
   };
 
   return (
@@ -63,7 +77,8 @@ export function OrderDetailPage() {
               <p className="text-slate-600">{order.address.city}, {order.address.department}</p>
               <p className="text-slate-600">{order.address.postalCode}</p>
             </div>}
-            <OrderMessages orderId={order.id} />
+            <OrderMessages order={order} />
+            {order.physicalDelivery && <PhysicalDeliveryTracking delivery={order.physicalDelivery} isAdmin={isAdmin} onStatusChange={handlePhysicalDeliveryStatus} onSatisfaction={handlePhysicalDeliverySatisfaction} />}
             {order.digitalDelivery && <section className="rounded-3xl border border-orange-200 bg-orange-50/50 p-6" aria-label="Seguimiento de entrega digital">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="text-xl font-semibold text-slate-950">Entrega digital</h2><p className="mt-1 text-sm text-slate-600">Código de seguimiento: <span className="font-semibold text-slate-950">{order.digitalDelivery.trackingCode}</span></p></div><span className="w-fit rounded-full bg-orange-700 px-3 py-1 text-sm font-semibold text-white">{getDigitalDeliveryStatusLabel(order.digitalDelivery.status)}</span></div>
               <ol className="mt-5 space-y-3 border-l-2 border-orange-200 pl-4">{order.digitalDelivery.events.map((event) => <li key={event.id} className="relative text-sm text-slate-700"><span aria-hidden="true" className="absolute -left-[1.42rem] top-1 h-3 w-3 rounded-full bg-orange-600" /><p className="font-semibold text-slate-950">{getDigitalDeliveryStatusLabel(event.status)}</p><p>{event.description}</p><time className="text-xs text-slate-500">{new Date(event.createdAt).toLocaleString()}</time></li>)}</ol>

@@ -15,6 +15,13 @@ const ORDER_STATUS_BY_DELIVERY: Partial<Record<DigitalDeliveryStatus, Order['sta
   ENTREGADO: 'ENTREGADO',
 };
 
+const STAGE_BY_DELIVERY: Record<DigitalDeliveryStatus, 'CONFIRMACION' | 'PREPARACION' | 'DESPACHO' | 'RECEPCION'> = {
+  PENDIENTE: 'CONFIRMACION',
+  PREPARANDO_ACCESO: 'PREPARACION',
+  ACCESO_ENVIADO: 'DESPACHO',
+  ENTREGADO: 'RECEPCION',
+};
+
 export function getDigitalDeliveryStatusLabel(status: DigitalDeliveryStatus): string {
   return {
     PENDIENTE: 'Pedido recibido',
@@ -56,7 +63,7 @@ export function updateDigitalDeliveryStatus(orderId: string, status: DigitalDeli
   };
   const updatedOrder: Order = { ...order, digitalDelivery, status: ORDER_STATUS_BY_DELIVERY[status] ?? order.status };
   saveOrder(updatedOrder);
-  sendMessage({ id: `delivery-notification-${createdAt}`, orderId, fromUserId: 'admin-1', toUserId: order.userId, text: `Actualización de entrega digital: ${DELIVERY_STATUS_COPY[status]}`, createdAt, seen: false });
+  sendMessage({ id: `delivery-notification-${createdAt}`, orderId, fromUserId: 'admin-1', toUserId: order.userId, text: `Actualización de entrega digital: ${DELIVERY_STATUS_COPY[status]}`, createdAt, seen: false, stage: STAGE_BY_DELIVERY[status], interactionType: 'ENTREGA' });
   return updatedOrder;
 }
 
@@ -68,6 +75,6 @@ export function recordDeliverySatisfaction(orderId: string, satisfaction: Exclud
   const text = satisfaction === 'SATISFECHO'
     ? 'Confirmo que recibí mi compra digital y estoy satisfecho/a con el servicio.'
     : 'Necesito ayuda con la entrega digital de este pedido.';
-  sendMessage({ id: `delivery-satisfaction-${createdAt}`, orderId, fromUserId: order.userId, toUserId: 'admin-1', text, createdAt, seen: false });
+  sendMessage({ id: `delivery-satisfaction-${createdAt}`, orderId, fromUserId: order.userId, toUserId: 'admin-1', text, createdAt, seen: false, stage: 'POSTENTREGA', interactionType: 'SATISFACCION' });
   return updatedOrder;
 }

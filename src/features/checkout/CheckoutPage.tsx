@@ -6,6 +6,7 @@ import { saveOrder } from '../../lib/orderStore';
 import { useCurrency } from '../currency/CurrencyContext';
 import { ensureDefaultPaymentMethod, getPaymentMethodExample } from '../../lib/paymentMethods';
 import { createDigitalDelivery } from '../../lib/digitalDelivery';
+import { createPhysicalDelivery } from '../../lib/physicalDelivery';
 import type { Address, PaymentMethod } from '../../types';
 import { useAuth } from '../auth/useAuth';
 
@@ -74,6 +75,7 @@ export function CheckoutPage() {
       address,
       paymentMethod,
       digitalDelivery: createDigitalDelivery(orderId, items),
+      physicalDelivery: createPhysicalDelivery(orderId, items, address),
     });
 
     clear();

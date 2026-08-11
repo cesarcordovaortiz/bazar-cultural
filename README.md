@@ -47,7 +47,9 @@ La conversión se informa como referencial, con la fuente y la fecha de vigencia
 
 El perfil permite agregar, retirar y marcar como predeterminado varios métodos de pago con campos estandarizados y ejemplos para efectivo contra entrega, transferencia bancaria, billetera digital y tarjeta. Solo se guardan referencias seguras como los últimos cuatro dígitos; nunca números completos, CVV, PIN o contraseñas. El checkout preselecciona el medio predeterminado.
 
-Los productos digitales crean una entrega local con código de seguimiento, eventos de preparación/envío/confirmación, avisos automáticos en Mensajes y una respuesta de satisfacción del cliente. Estos flujos son demostrativos: para producción requieren un proveedor de pagos, un servicio de entrega de contenidos, notificaciones y una API persistente.
+Los productos digitales crean una entrega local con código de seguimiento, eventos de preparación/envío/confirmación, avisos automáticos en Mensajes y una respuesta de satisfacción del cliente. Las compras físicas crean un delivery demostrativo con repartidor identificado, fases de despacho, mapa gráfico de ruta y mensajes de avance. El Centro de mensajes representa visualmente a cliente, equipo y delivery, permite filtrar la conversación por etapa y ofrece al administrador un gráfico de interacciones por fase y tipología para priorizar la atención.
+
+Las rutas, el avance y la ubicación del delivery son una simulación visual: no representan la localización de una persona. Estos flujos requieren para producción un proveedor de pagos, un servicio de entrega de contenidos, un operador logístico con consentimiento de geolocalización, notificaciones y una API persistente.
 
 ## Despliegue en GitHub Pages
 

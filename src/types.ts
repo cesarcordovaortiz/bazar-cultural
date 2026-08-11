@@ -5,6 +5,9 @@ export type PaymentMethodType = 'card' | 'transfer' | 'cash' | 'wallet';
 export type FulfillmentType = 'digital' | 'physical';
 export type DigitalDeliveryStatus = 'PENDIENTE' | 'PREPARANDO_ACCESO' | 'ACCESO_ENVIADO' | 'ENTREGADO';
 export type DeliverySatisfaction = 'PENDIENTE' | 'SATISFECHO' | 'REQUIERE_AYUDA';
+export type PhysicalDeliveryStatus = 'PENDIENTE' | 'ASIGNADO' | 'RECOGIDO' | 'EN_RUTA' | 'ENTREGADO';
+export type InteractionStage = 'CONSULTA' | 'CONFIRMACION' | 'PREPARACION' | 'DESPACHO' | 'EN_RUTA' | 'RECEPCION' | 'POSTENTREGA';
+export type InteractionType = 'CONSULTA' | 'PEDIDO' | 'ENTREGA' | 'SOPORTE' | 'SATISFACCION';
 
 export interface Product {
   id: string;
@@ -50,6 +53,7 @@ export interface Order {
   assignedTo?: string;
   paymentMethod?: PaymentMethod;
   digitalDelivery?: DigitalDelivery;
+  physicalDelivery?: PhysicalDelivery;
 }
 
 export interface UserProfile {
@@ -92,6 +96,25 @@ export interface DigitalDelivery {
   satisfaction: DeliverySatisfaction;
 }
 
+export interface PhysicalDeliveryEvent {
+  id: string;
+  status: PhysicalDeliveryStatus;
+  description: string;
+  createdAt: number;
+}
+
+export interface PhysicalDelivery {
+  trackingCode: string;
+  status: PhysicalDeliveryStatus;
+  courierName: string;
+  courierVehicle: string;
+  originLabel: string;
+  destinationLabel: string;
+  routeProgress: number;
+  events: PhysicalDeliveryEvent[];
+  satisfaction: DeliverySatisfaction;
+}
+
 export interface Campaign {
   id: string;
   name: string;
@@ -110,4 +133,6 @@ export interface Message {
   text: string;
   createdAt: number;
   seen: boolean;
+  stage?: InteractionStage;
+  interactionType?: InteractionType;
 }

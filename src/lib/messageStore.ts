@@ -3,14 +3,17 @@ import type { Message } from '../types';
 const STORAGE_KEY = 'bazar_messages_v1';
 const CHANGE_EVENT = 'bazar-messages-changed';
 
-export function readMessages(orderId: string): Message[] {
+export function readAllMessages(): Message[] {
   try {
     const value = localStorage.getItem(STORAGE_KEY);
-    const messages = value ? JSON.parse(value) as Message[] : [];
-    return messages.filter((message) => message.orderId === orderId).sort((a, b) => a.createdAt - b.createdAt);
+    return (value ? JSON.parse(value) as Message[] : []).sort((first, second) => first.createdAt - second.createdAt);
   } catch {
     return [];
   }
+}
+
+export function readMessages(orderId: string): Message[] {
+  return readAllMessages().filter((message) => message.orderId === orderId);
 }
 
 export function sendMessage(message: Message): void {
