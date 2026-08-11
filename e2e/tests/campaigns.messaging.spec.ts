@@ -8,9 +8,28 @@ test('admin can create a local campaign', async ({ page }) => {
   await page.goto('/#/admin/campaigns');
 
   await page.getByRole('textbox', { name: 'Nombre' }).fill('Semana del arte');
+  await page.getByRole('checkbox', { name: 'Póster Cultural' }).check();
   await page.getByRole('button', { name: 'Crear campaña' }).click();
 
-  await expect(page.getByRole('heading', { name: 'Semana del arte' })).toBeVisible();
+  const campaign = page.getByRole('heading', { name: 'Semana del arte' }).locator('xpath=ancestor::article');
+  await expect(campaign).toBeVisible();
+  await expect(campaign.getByText('2 productos incluidos')).toBeVisible();
+});
+
+test('admin cannot create a campaign that ends before it starts', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('bazar_auth_token', 'mock-token');
+    localStorage.setItem('bazar_user_profile', JSON.stringify({ id: 'admin-1', name: 'Admin', email: 'admin@bazar.test', roles: ['admin'] }));
+  });
+  await page.goto('/#/admin/campaigns');
+
+  await page.getByRole('textbox', { name: 'Nombre' }).fill('Campaña inválida');
+  await page.getByLabel('Inicio').fill('2026-12-10T12:00');
+  await page.getByLabel('Fin').fill('2026-12-09T12:00');
+  await page.getByRole('button', { name: 'Crear campaña' }).click();
+
+  await expect(page.getByRole('alert')).toHaveText('La fecha de fin debe ser posterior al inicio');
+  await expect(page.getByRole('heading', { name: 'Campaña inválida' })).not.toBeVisible();
 });
 
 test('demo administrator access opens the campaigns UI', async ({ page }) => {
