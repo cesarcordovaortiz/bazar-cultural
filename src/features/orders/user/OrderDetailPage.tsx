@@ -4,6 +4,7 @@ import { getOrderById, updateOrderStatus } from '../../../lib/orderStore';
 import type { Order } from '../../../types';
 import { OrderMessages } from '../../messaging/OrderMessages';
 import { useAuth } from '../../auth/useAuth';
+import { formatCurrency } from '../../../lib/presentation';
 
 export function OrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
@@ -64,7 +65,7 @@ export function OrderDetailPage() {
                         <p className="text-sm text-slate-600">Cantidad: {item.quantity}</p>
                       </div>
                     </div>
-                    <p className="font-semibold text-slate-950">${(item.product.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold text-slate-950">{formatCurrency(item.product.price * item.quantity, item.product.currency)}</p>
                   </div>
                 ))}
               </div>
@@ -107,10 +108,10 @@ export function OrderDetailPage() {
             </div>
             <div className="rounded-3xl border border-slate-200 p-6 bg-slate-50">
               <h2 className="text-xl font-semibold text-slate-950">Resumen</h2>
-              {order.subtotal !== undefined && <p className="mt-4 text-slate-600">Subtotal: ${order.subtotal.toFixed(2)}</p>}
-              {(order.discount ?? 0) > 0 && <p className="mt-2 text-sm font-semibold text-orange-800">Descuento de campañas: −${order.discount?.toFixed(2)}</p>}
+              {order.subtotal !== undefined && <p className="mt-4 text-slate-600">Subtotal: {formatCurrency(order.subtotal, order.currency)}</p>}
+              {(order.discount ?? 0) > 0 && <p className="mt-2 text-sm font-semibold text-orange-800">Descuento de campañas: −{formatCurrency(order.discount ?? 0, order.currency)}</p>}
               <p className="mt-3 text-slate-600">Total</p>
-              <p className="text-3xl font-semibold text-slate-950">${order.total.toFixed(2)}</p>
+              <p className="text-3xl font-semibold text-slate-950">{formatCurrency(order.total, order.currency)}</p>
               {order.paymentMethod && <p className="mt-3 text-sm text-slate-600">Pago: {order.paymentMethod.label}</p>}
             </div>
           </aside>

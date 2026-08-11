@@ -26,16 +26,16 @@ test('an active campaign applies its discount throughout the cart and checkout',
 
   const firstProduct = page.getByRole('heading', { name: 'Libro de Historia' }).locator('xpath=ancestor::article');
   await expect(firstProduct.getByText('10% de descuento · Bienvenida cultural')).toBeVisible();
-  await expect(firstProduct.getByText('$25.20', { exact: true })).toBeVisible();
+  await expect(firstProduct.getByText(/USD\s*25,20/)).toBeVisible();
   await firstProduct.getByRole('button', { name: 'Añadir' }).click();
   await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: /Carrito/ }).click();
 
   await expect(page.getByText('Descuento de campañas')).toBeVisible();
-  await expect(page.getByText('−$2.80')).toBeVisible();
-  await expect(page.getByRole('complementary', { name: 'Resumen del carrito' }).getByText('$25.20', { exact: true })).toBeVisible();
+  await expect(page.getByText(/−USD\s*2,80/)).toBeVisible();
+  await expect(page.getByRole('complementary', { name: 'Resumen del carrito' }).getByText(/USD\s*25,20/)).toBeVisible();
   await page.getByRole('link', { name: 'Ir al checkout' }).click();
   await expect(page.getByText('Descuento de campañas')).toBeVisible();
-  await expect(page.getByText('$25.20', { exact: true })).toBeVisible();
+  await expect(page.getByText(/USD\s*25,20/)).toBeVisible();
 });
 
 test('checkout redirects an empty cart to the catalog', async ({ page }) => {

@@ -2,16 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FixedSizeList as List } from 'react-window';
 import { readOrders, subscribeOrders, updateOrderStatus } from '../../../lib/orderStore';
+import { formatCurrency } from '../../../lib/presentation';
 import type { Order, OrderStatus } from '../../../types';
 
 const STATUS_FILTERS: OrderStatus[] = ['PENDIENTE', 'ACEPTADO', 'EN_CAMINO', 'ENTREGADO', 'CANCELADO'];
 const PAGE_SIZE = 20;
 
 type SortOption = 'newest' | 'oldest' | 'total-desc' | 'total-asc';
-
-function formatCurrency(value: number) {
-  return `$${value.toFixed(2)}`;
-}
 
 export function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'ALL'>('ALL');

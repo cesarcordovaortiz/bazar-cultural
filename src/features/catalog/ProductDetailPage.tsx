@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useCart } from '../cart/CartContext';
 import { useProducts } from './useProducts';
 import { getProductPricing } from '../../lib/pricing';
+import { formatCurrency, getProductTypeLabel } from '../../lib/presentation';
 
 export function ProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
@@ -19,11 +20,11 @@ export function ProductDetailPage() {
         <div className="aspect-square overflow-hidden rounded-3xl bg-orange-100"><img src={product.image} alt={`Imagen de ${product.name}`} width="640" height="640" className="h-full w-full object-cover" /></div>
         <div className="flex flex-col items-start">
           <Link to="/" className="text-sm font-semibold text-slate-600 underline underline-offset-4">Volver al catálogo</Link>
-          <p className="mt-6 text-sm font-medium uppercase tracking-wider text-slate-500">{product.type}</p>
+          <p className="mt-6 text-sm font-medium uppercase tracking-wider text-slate-500">{getProductTypeLabel(product.type)}</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-950">{product.name}</h1>
           <p className="mt-4 leading-7 text-slate-600">{product.description}</p>
           <div className="mt-5 flex flex-wrap gap-2">{product.tags.map((tag) => <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">{tag}</span>)}</div>
-          <div className="mt-8"><p className="text-3xl font-semibold text-slate-950">${pricing?.finalPrice.toFixed(2)}</p>{pricing?.campaign && <><p className="mt-1 text-sm font-semibold text-orange-800">{pricing.discountPercent}% de descuento · {pricing.campaign.name}</p><p className="mt-1 text-sm text-slate-500 line-through">Precio habitual: ${pricing.originalPrice.toFixed(2)}</p></>}</div>
+          <div className="mt-8"><p className="text-3xl font-semibold text-slate-950">{pricing && formatCurrency(pricing.finalPrice, product.currency)}</p>{pricing?.campaign && <><p className="mt-1 text-sm font-semibold text-orange-800">{pricing.discountPercent}% de descuento · {pricing.campaign.name}</p><p className="mt-1 text-sm text-slate-500 line-through">Precio habitual: {formatCurrency(pricing.originalPrice, product.currency)}</p></>}</div>
           <p className="mt-2 text-sm text-slate-600">{product.inventory} unidades disponibles</p>
           <button type="button" disabled={product.inventory === 0} onClick={() => addProduct(product)} className="mt-6 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-slate-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500">{product.inventory === 0 ? 'Agotado' : 'Añadir al carrito'}</button>
         </div>

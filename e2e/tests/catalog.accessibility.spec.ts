@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 test('catalog filters by cultural category and opens a product detail', async ({ page }) => {
   await page.goto('/');
 
-  await page.getByRole('button', { name: 'print', exact: true }).click();
+  await page.getByRole('button', { name: 'Arte gráfico', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Serigrafía Mercado Central' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Vinilo Raíces del Altiplano' })).not.toBeVisible();
 

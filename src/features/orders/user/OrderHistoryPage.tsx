@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { readOrders, subscribeOrders } from '../../../lib/orderStore';
+import { formatCurrency } from '../../../lib/presentation';
 import type { Order } from '../../../types';
 
 export function OrderHistoryPage() {
@@ -31,7 +32,7 @@ export function OrderHistoryPage() {
                 </div>
                 <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
                   <span>{order.items.length} artículos</span>
-                  <span>Total ${order.total.toFixed(2)}</span>
+                  <span>Total {formatCurrency(order.total, order.currency)}</span>
                 </div>
               </Link>
             ))

@@ -3,22 +3,24 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../cart/CartContext';
 import { useProducts } from '../catalog/useProducts';
 import { getProductPricing } from '../../lib/pricing';
+import { formatCurrency, PRODUCT_TYPE_OPTIONS } from '../../lib/presentation';
 import { useActiveCampaigns } from '../campaigns/useActiveCampaigns';
+import type { ProductType } from '../../types';
 
-const PRODUCT_TYPES = ['Todos', 'book', 'music', 'movie', 'print', 'painting', 'sculpture'] as const;
+const PRODUCT_TYPES: Array<{ value: ProductType | 'all'; label: string }> = [{ value: 'all', label: 'Todos' }, ...PRODUCT_TYPE_OPTIONS];
 
 export function ShopPage() {
   const { addProduct, items, total } = useCart();
   const { data: products = [], isLoading } = useProducts();
   const [search, setSearch] = useState('');
-  const [type, setType] = useState<(typeof PRODUCT_TYPES)[number]>('Todos');
+  const [type, setType] = useState<ProductType | 'all'>('all');
   const [activeOfferIndex, setActiveOfferIndex] = useState(0);
   const activeCampaigns = useActiveCampaigns();
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const filteredProducts = useMemo(() => products.filter((product) => {
     const term = search.toLocaleLowerCase();
-    return (type === 'Todos' || product.type === type) && [product.name, product.description, ...product.tags].some((value) => value.toLocaleLowerCase().includes(term));
+    return (type === 'all' || product.type === type) && [product.name, product.description, ...product.tags].some((value) => value.toLocaleLowerCase().includes(term));
   }), [products, search, type]);
   const activeOffer = activeCampaigns[activeOfferIndex % activeCampaigns.length];
   const activeOfferProducts = activeOffer ? products.filter((product) => activeOffer.productIds.includes(product.id)) : [];
@@ -42,7 +44,7 @@ export function ShopPage() {
           >
             <p className="text-xs uppercase tracking-[0.2em] text-orange-100">Carrito</p>
             <p className="text-xl font-semibold">{itemCount} artículos</p>
-            <p className="text-sm text-orange-50">Total ${total.toFixed(2)}</p>
+            <p className="text-sm text-orange-50">Total {formatCurrency(total)}</p>
           </Link>
         </div>
       </section>
@@ -66,7 +68,7 @@ export function ShopPage() {
       <section aria-label="Filtros del catálogo" className="cultural-surface mb-6 rounded-3xl p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <label className="text-sm font-semibold text-stone-700">Buscar productos<input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Título, descripción o etiqueta" className="mt-2 block w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-stone-900 placeholder:text-stone-500 sm:w-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600" /></label>
-          <div className="flex flex-wrap gap-2">{PRODUCT_TYPES.map((item) => <button key={item} type="button" aria-pressed={type === item} onClick={() => setType(item)} className={type === item ? 'rounded-full bg-orange-700 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600' : 'rounded-full bg-orange-100 px-3 py-2 text-sm font-semibold text-stone-700 transition hover:bg-orange-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600'}>{item === 'Todos' ? item : item}</button>)}</div>
+          <div className="flex flex-wrap gap-2">{PRODUCT_TYPES.map((item) => <button key={item.value} type="button" aria-pressed={type === item.value} onClick={() => setType(item.value)} className={type === item.value ? 'rounded-full bg-orange-700 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600' : 'rounded-full bg-orange-100 px-3 py-2 text-sm font-semibold text-stone-700 transition hover:bg-orange-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600'}>{item.label}</button>)}</div>
         </div>
       </section>
 
@@ -86,7 +88,7 @@ export function ShopPage() {
             <p className="mb-5 text-sm leading-6 text-slate-600">{product.description}</p>
             <Link to={`/products/${product.id}`} className="mb-5 inline-flex text-sm font-semibold text-orange-800 underline underline-offset-4 transition hover:text-orange-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600">Ver detalle</Link>
             <div className="flex items-center justify-between gap-3">
-              <span className="flex flex-col"><span className="text-2xl font-semibold text-slate-900">${pricing.finalPrice.toFixed(2)}</span>{pricing.campaign && <span className="text-sm text-stone-500 line-through">${pricing.originalPrice.toFixed(2)}</span>}</span>
+              <span className="flex flex-col"><span className="text-2xl font-semibold text-slate-900">{formatCurrency(pricing.finalPrice, product.currency)}</span>{pricing.campaign && <span className="text-sm text-stone-500 line-through">{formatCurrency(pricing.originalPrice, product.currency)}</span>}</span>
               <button
                 type="button"
                 onClick={() => addProduct(product)}

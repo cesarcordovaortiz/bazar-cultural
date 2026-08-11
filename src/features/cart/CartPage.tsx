@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useCart } from './CartContext';
 import { getProductPricing } from '../../lib/pricing';
+import { formatCurrency } from '../../lib/presentation';
 
 export function CartPage() {
   const { items, removeProduct, total, subtotal, discount, activeCampaigns, updateQuantity } = useCart();
@@ -36,9 +37,9 @@ export function CartPage() {
                     <img src={product.image} alt="" width="64" height="64" loading="lazy" decoding="async" className="h-16 w-16 rounded-2xl object-cover" />
                     <div>
                       <h2 className="font-semibold text-slate-950">{product.name}</h2>
-                      <p className="mt-1 text-sm text-slate-600">${pricing.finalPrice.toFixed(2)} por unidad</p>
+                      <p className="mt-1 text-sm text-slate-600">{formatCurrency(pricing.finalPrice, product.currency)} por unidad</p>
                       {pricing.campaign && <p className="mt-1 text-xs font-semibold text-orange-800">{pricing.discountPercent}% de descuento · {pricing.campaign.name}</p>}
-                      {pricing.campaign && <p className="mt-1 text-xs text-stone-500 line-through">${pricing.originalPrice.toFixed(2)} habitual</p>}
+                      {pricing.campaign && <p className="mt-1 text-xs text-stone-500 line-through">{formatCurrency(pricing.originalPrice, product.currency)} habitual</p>}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -52,7 +53,7 @@ export function CartPage() {
                       onChange={(event) => updateQuantity(product.id, Math.min(product.inventory, Number(event.target.value) || 0))}
                       className="w-20 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-center text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
                     />
-                    <span className="w-20 text-right font-semibold text-slate-950">${(pricing.finalPrice * quantity).toFixed(2)}</span>
+                    <span className="w-24 text-right font-semibold text-slate-950">{formatCurrency(pricing.finalPrice * quantity, product.currency)}</span>
                     <button type="button" onClick={() => removeProduct(product.id)} className="text-sm font-semibold text-rose-700 underline underline-offset-4 transition hover:text-rose-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400">
                       Quitar
                     </button>
@@ -63,9 +64,9 @@ export function CartPage() {
             </section>
             <aside className="h-fit rounded-3xl bg-slate-950 p-6 text-white" aria-label="Resumen del carrito">
               <dl className="space-y-3 text-sm">
-                <div className="flex items-center justify-between gap-4"><dt className="text-slate-300">Subtotal</dt><dd className="font-semibold">${subtotal.toFixed(2)}</dd></div>
-                {discount > 0 && <div className="flex items-center justify-between gap-4 text-orange-200"><dt>Descuento de campañas</dt><dd className="font-semibold">−${discount.toFixed(2)}</dd></div>}
-                <div className="border-t border-white/20 pt-3"><dt className="text-sm text-slate-300">Total</dt><dd className="mt-1 text-3xl font-semibold">${total.toFixed(2)}</dd></div>
+                <div className="flex items-center justify-between gap-4"><dt className="text-slate-300">Subtotal</dt><dd className="font-semibold">{formatCurrency(subtotal)}</dd></div>
+                {discount > 0 && <div className="flex items-center justify-between gap-4 text-orange-200"><dt>Descuento de campañas</dt><dd className="font-semibold">−{formatCurrency(discount)}</dd></div>}
+                <div className="border-t border-white/20 pt-3"><dt className="text-sm text-slate-300">Total</dt><dd className="mt-1 text-3xl font-semibold">{formatCurrency(total)}</dd></div>
               </dl>
               <Link to="/checkout" className="mt-6 inline-flex w-full justify-center rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition-all duration-200 hover:bg-slate-100 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
                 Ir al checkout

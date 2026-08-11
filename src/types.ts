@@ -1,4 +1,5 @@
 export type OrderStatus = 'PENDIENTE' | 'ACEPTADO' | 'EN_CAMINO' | 'ENTREGADO' | 'CANCELADO';
+export type ProductType = 'book' | 'music' | 'movie' | 'print' | 'painting' | 'sculpture';
 
 export interface Product {
   id: string;
@@ -7,7 +8,7 @@ export interface Product {
   price: number;
   currency: string;
   inventory: number;
-  type: 'book' | 'music' | 'movie' | 'print' | 'painting' | 'sculpture';
+  type: ProductType;
   tags: string[];
   image: string;
 }
