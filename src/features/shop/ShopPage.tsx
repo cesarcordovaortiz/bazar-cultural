@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../cart/CartContext';
 import { useProducts } from '../catalog/useProducts';
-import { readCampaigns, subscribeCampaigns } from '../../lib/campaignStore';
-import type { Campaign } from '../../types';
+import { getProductPricing } from '../../lib/pricing';
+import { useActiveCampaigns } from '../campaigns/useActiveCampaigns';
 
 const PRODUCT_TYPES = ['Todos', 'book', 'music', 'movie', 'print', 'painting', 'sculpture'] as const;
 
@@ -12,21 +12,14 @@ export function ShopPage() {
   const { data: products = [], isLoading } = useProducts();
   const [search, setSearch] = useState('');
   const [type, setType] = useState<(typeof PRODUCT_TYPES)[number]>('Todos');
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [activeOfferIndex, setActiveOfferIndex] = useState(0);
-
-  useEffect(() => {
-    const refresh = (): void => setCampaigns(readCampaigns());
-    refresh();
-    return subscribeCampaigns(refresh);
-  }, []);
+  const activeCampaigns = useActiveCampaigns();
 
   const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
   const filteredProducts = useMemo(() => products.filter((product) => {
     const term = search.toLocaleLowerCase();
     return (type === 'Todos' || product.type === type) && [product.name, product.description, ...product.tags].some((value) => value.toLocaleLowerCase().includes(term));
   }), [products, search, type]);
-  const activeCampaigns = useMemo(() => campaigns.filter((campaign) => campaign.active && campaign.startAt <= Date.now() && campaign.endAt > Date.now()), [campaigns]);
   const activeOffer = activeCampaigns[activeOfferIndex % activeCampaigns.length];
   const activeOfferProducts = activeOffer ? products.filter((product) => activeOffer.productIds.includes(product.id)) : [];
 
@@ -78,7 +71,9 @@ export function ShopPage() {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-3">
-        {isLoading ? Array.from({ length: 3 }, (_, index) => <div key={index} className="h-64 animate-pulse rounded-3xl bg-slate-200" />) : filteredProducts.map((product) => (
+        {isLoading ? Array.from({ length: 3 }, (_, index) => <div key={index} className="h-64 animate-pulse rounded-3xl bg-slate-200" />) : filteredProducts.map((product) => {
+          const pricing = getProductPricing(product, activeCampaigns);
+          return (
           <article key={product.id} className="cultural-surface rounded-3xl p-6 transition hover:-translate-y-0.5 hover:shadow-lg">
             <div className="mb-5 aspect-square overflow-hidden rounded-2xl bg-orange-100">
               <img src={product.image} alt={`Imagen de ${product.name}`} width="640" height="640" loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-300 hover:scale-105" />
@@ -87,10 +82,11 @@ export function ShopPage() {
               <h2 className="text-xl font-semibold text-slate-950">{product.name}</h2>
               <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-800">{product.currency}</span>
             </div>
+            {pricing.campaign && <p className="mb-3 inline-flex rounded-full bg-orange-100 px-3 py-1 text-xs font-bold text-orange-800">{pricing.discountPercent}% de descuento · {pricing.campaign.name}</p>}
             <p className="mb-5 text-sm leading-6 text-slate-600">{product.description}</p>
             <Link to={`/products/${product.id}`} className="mb-5 inline-flex text-sm font-semibold text-orange-800 underline underline-offset-4 transition hover:text-orange-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-600">Ver detalle</Link>
             <div className="flex items-center justify-between gap-3">
-              <span className="text-2xl font-semibold text-slate-900">${product.price.toFixed(2)}</span>
+              <span className="flex flex-col"><span className="text-2xl font-semibold text-slate-900">${pricing.finalPrice.toFixed(2)}</span>{pricing.campaign && <span className="text-sm text-stone-500 line-through">${pricing.originalPrice.toFixed(2)}</span>}</span>
               <button
                 type="button"
                 onClick={() => addProduct(product)}
@@ -101,7 +97,8 @@ export function ShopPage() {
               </button>
             </div>
           </article>
-        ))}
+          );
+        })}
         {!isLoading && filteredProducts.length === 0 && <p className="col-span-full rounded-3xl bg-white p-8 text-center text-slate-600 shadow-sm ring-1 ring-slate-200">No encontramos productos con esos filtros.</p>}
       </section>
     </main>

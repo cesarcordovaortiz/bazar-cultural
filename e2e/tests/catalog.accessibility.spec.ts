@@ -17,7 +17,7 @@ test('customer sees active cultural offers on the catalog page', async ({ page }
   await page.goto('/');
 
   await expect(page.getByRole('region', { name: 'Ofertas vigentes' })).toBeVisible();
-  await expect(page.getByText('Bienvenida cultural')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bienvenida cultural' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Ver productos con oferta antes de que termine' })).toBeVisible();
 });
 

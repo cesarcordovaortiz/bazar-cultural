@@ -16,7 +16,7 @@ interface CheckoutForm {
 }
 
 export function CheckoutPage() {
-  const { items, total, clear } = useCart();
+  const { items, total, subtotal, discount, clear } = useCart();
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { user } = useAuth();
@@ -53,6 +53,8 @@ export function CheckoutPage() {
       userId: user?.id ?? 'guest-user',
       status: 'PENDIENTE',
       createdAt: Date.now(),
+      subtotal,
+      discount,
       total: orderTotal,
       currency: 'USD',
       items,
@@ -143,8 +145,7 @@ export function CheckoutPage() {
 
         <aside className="rounded-3xl bg-slate-950 p-8 text-white shadow-sm">
           <h2 className="text-xl font-semibold">Resumen</h2>
-          <p className="mt-4 text-slate-300">Total del carrito</p>
-          <p className="mt-2 text-4xl font-semibold">${orderTotal.toFixed(2)}</p>
+          <dl className="mt-4 space-y-3 text-sm"><div className="flex justify-between gap-4"><dt className="text-slate-300">Subtotal</dt><dd className="font-semibold">${subtotal.toFixed(2)}</dd></div>{discount > 0 && <div className="flex justify-between gap-4 text-orange-200"><dt>Descuento de campañas</dt><dd className="font-semibold">−${discount.toFixed(2)}</dd></div>}<div className="border-t border-white/20 pt-3"><dt className="text-slate-300">Total del carrito</dt><dd className="mt-1 text-4xl font-semibold">${orderTotal.toFixed(2)}</dd></div></dl>
           <p className="mt-4 text-sm text-slate-400">{items.length} artículos listos para envío</p>
           {isSubmitted && <p className="mt-4 rounded-3xl bg-green-500/10 px-4 py-3 text-sm text-green-100">Pedido creado correctamente.</p>}
         </aside>

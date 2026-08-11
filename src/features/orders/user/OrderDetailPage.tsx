@@ -107,7 +107,9 @@ export function OrderDetailPage() {
             </div>
             <div className="rounded-3xl border border-slate-200 p-6 bg-slate-50">
               <h2 className="text-xl font-semibold text-slate-950">Resumen</h2>
-              <p className="mt-4 text-slate-600">Total</p>
+              {order.subtotal !== undefined && <p className="mt-4 text-slate-600">Subtotal: ${order.subtotal.toFixed(2)}</p>}
+              {(order.discount ?? 0) > 0 && <p className="mt-2 text-sm font-semibold text-orange-800">Descuento de campañas: −${order.discount?.toFixed(2)}</p>}
+              <p className="mt-3 text-slate-600">Total</p>
               <p className="text-3xl font-semibold text-slate-950">${order.total.toFixed(2)}</p>
               {order.paymentMethod && <p className="mt-3 text-sm text-slate-600">Pago: {order.paymentMethod.label}</p>}
             </div>

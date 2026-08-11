@@ -32,6 +32,8 @@ export interface Order {
   userId: string;
   status: OrderStatus;
   createdAt: number;
+  subtotal?: number;
+  discount?: number;
   total: number;
   currency: string;
   items: CartItem[];

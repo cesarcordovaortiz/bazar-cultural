@@ -1,5 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
-import type { CartItem, Product } from '../../types';
+import { useActiveCampaigns } from '../campaigns/useActiveCampaigns';
+import { calculateCartPricing } from '../../lib/pricing';
+import type { Campaign, CartItem, Product } from '../../types';
 
 interface CartState {
   items: CartItem[];
@@ -7,6 +9,9 @@ interface CartState {
   removeProduct: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clear: () => void;
+  activeCampaigns: Campaign[];
+  subtotal: number;
+  discount: number;
   total: number;
 }
 
@@ -30,15 +35,13 @@ function saveCart(items: CartItem[]) {
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => loadCart());
+  const activeCampaigns = useActiveCampaigns();
 
   useEffect(() => {
     saveCart(items);
   }, [items]);
 
-  const total = useMemo(
-    () => items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
-    [items],
-  );
+  const pricing = useMemo(() => calculateCartPricing(items, activeCampaigns), [items, activeCampaigns]);
 
   const addProduct = (product: Product) => {
     setItems((current) => {
@@ -69,7 +72,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clear = () => setItems([]);
 
   return (
-    <CartContext.Provider value={{ items, addProduct, removeProduct, updateQuantity, clear, total }}>
+    <CartContext.Provider value={{ items, addProduct, removeProduct, updateQuantity, clear, activeCampaigns, ...pricing }}>
       {children}
     </CartContext.Provider>
   );
