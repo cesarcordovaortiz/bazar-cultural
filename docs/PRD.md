@@ -4,9 +4,9 @@
 | --- | --- |
 | Producto | Bazar Cultural |
 | Documento | Product Requirements Document (PRD) |
-| Versión | 1.0 |
-| Estado | Base de producto para MVP y evolución a producción |
-| Fecha | 10 de agosto de 2026 |
+| Versión | 1.1 |
+| Estado | MVP frontend publicado; base para evolución a producción |
+| Fecha | 11 de agosto de 2026 |
 | Propietario | Product Owner de Bazar Cultural |
 | Audiencia | Negocio, diseño, ingeniería, QA, operaciones y aliados culturales |
 
@@ -16,7 +16,7 @@ Bazar Cultural es una plataforma de comercio electrónico especializada en biene
 
 La propuesta se identifica con la **economía naranja**: una experiencia digital cálida, confiable e inclusiva que pone en valor la creatividad, la memoria, los oficios y las comunidades culturales. El producto debe equilibrar una navegación comercial eficaz con una presentación respetuosa del contexto cultural de cada oferta.
 
-La versión actualmente publicada es un frontend estático con datos y procesos simulados. Incluye catálogo, carrito, checkout simulado, perfiles, pedidos, campañas, mensajería y vistas administrativas. Este PRD define tanto el alcance comprobado de ese MVP como los requisitos para llevarlo a una operación real y segura.
+La versión actualmente publicada es un frontend estático con datos y procesos simulados. Incluye catálogo, ofertas, precios en USD/Bs con referencia oficial BCB, carrito, checkout simulado, confirmación postcompra, perfiles, pedidos, delivery demostrativo, mensajería por etapas y vistas administrativas. Este PRD define el alcance comprobado de ese MVP y los requisitos para llevarlo a una operación real y segura.
 
 ## 2. Problema y oportunidad
 
@@ -55,25 +55,27 @@ Permitir que una persona encuentre un producto cultural relevante y complete una
 | Área | Capacidades incluidas |
 | --- | --- |
 | Descubrimiento | Catálogo de 20 productos con imágenes WebP, filtro por categoría y búsqueda por texto, etiquetas y descripción. |
-| Oferta comercial | Carrusel de campañas vigentes con descuento, urgencia, CTA y acceso a los productos incluidos. |
-| Compra | Carrito persistente, detalle de producto y checkout/pago simulado. |
-| Cuenta | Inicio de sesión simulado, roles de cliente y administrador, perfil editable, datos de contacto, dirección y geolocalización opcional. |
-| Pedidos | Historial y detalle para cliente; búsqueda, filtros, cambios de estado y lista virtualizada para administración. |
+| Oferta comercial | Carrusel de campañas vigentes con imágenes de producto, rotación automática controlable, descuento, urgencia, CTA y acceso a los productos incluidos. |
+| Moneda | Visualización en USD y bolivianos (Bs/BOB); cotización oficial BCB sincronizada por GitHub Actions y visible con fuente y fecha de vigencia. |
+| Compra | Carrito persistente, detalle de producto, checkout/pago simulado y confirmación postcompra con identificador, total, modalidad y accesos al seguimiento. |
+| Cuenta | Inicio de sesión simulado, roles de cliente y administrador, perfil editable, datos de contacto, dirección y geolocalización opcional; referencias locales de varios métodos de pago y medio predeterminado. |
+| Pedidos | Historial y detalle para cliente; búsqueda, filtros, cambios de estado y lista virtualizada para administración; protección de navegación de detalle por propietario en el frontend. |
 | Campañas | Creación y activación local de campañas, descuento y KPI simulado. |
-| Atención | Mensajería local vinculada a pedidos y centro de mensajes. |
-| Calidad | Diseño responsivo, carga diferida de vistas, pruebas E2E y análisis automatizado de accesibilidad del catálogo. |
+| Atención y delivery | Chat visual entre cliente, equipo y delivery, filtros por etapa, tipología de interacción, entrega digital y delivery físico demostrativo con fases, mapa gráfico, avisos y satisfacción. |
+| Administración | Panel de interacciones por etapa y tipología para priorizar la atención, además de la gestión de pedidos y campañas. |
+| Calidad | Diseño responsivo, carga diferida de vistas, 23 pruebas E2E y análisis automatizado de accesibilidad Axe del catálogo y carrusel. |
 
-La aplicación está desplegada en GitHub Pages. Los datos de usuario, carrito, pedidos, campañas y mensajes son simulados y se persisten en el navegador; no constituyen una operación transaccional real.
+La aplicación está desplegada en GitHub Pages. Los datos de usuario, carrito, pedidos, campañas, delivery y mensajes son simulados y se persisten en el navegador; no constituyen una operación transaccional real. La cotización BCB se publica como archivo estático del sitio después de una sincronización automatizada, pero no sustituye la confirmación de tipo de cambio de un proveedor de pagos.
 
 ### 4.2. Fuera de alcance del MVP publicado
 
 - Cobros reales, emisión de comprobantes, devoluciones financieras y conciliación.
 - Inventario, precios, usuarios y pedidos persistidos en un servidor.
-- Entrega, asignación de repartidor, cálculo de costos de envío y trazabilidad logística real.
+- Entrega, asignación de repartidor, cálculo de costos de envío, GPS, geocodificación y trazabilidad logística real.
 - Autenticación segura, recuperación de contraseña, MFA, autorización en servidor y gestión de sesiones.
 - Sincronización en tiempo real, notificaciones push, correo, SMS o WhatsApp.
 - Gestión de múltiples vendedores, liquidaciones, comisiones y panel de creadores.
-- Mapa visual o validación geográfica de direcciones.
+- Mapas de terceros, posicionamiento en tiempo real o validación geográfica de direcciones. El mapa actual es una representación gráfica no geográfica.
 
 ### 4.3. Decisiones que requieren validación de negocio
 
@@ -118,20 +120,22 @@ No se deberá optimizar una métrica comercial a costa de engañar con disponibi
 1. La persona llega al catálogo desde un enlace, búsqueda o campaña.
 2. Ve una propuesta de valor y las ofertas vigentes destacadas.
 3. Busca o filtra por categoría; revisa tarjeta y detalle del producto.
-4. Añade un producto disponible al carrito y revisa cantidades, total y moneda.
+4. Añade un producto disponible al carrito y revisa cantidades, descuentos, total y moneda de visualización.
 5. Inicia sesión o continúa según la política definida.
 6. Indica o elige dirección y método de pago.
-7. Confirma la compra, recibe un identificador de pedido y ve el siguiente paso.
-8. Consulta el historial, estado y mensajes de ese pedido.
+7. Confirma la compra y recibe una pantalla persistente con identificador, total y modalidad de entrega.
+8. Accede desde la confirmación al seguimiento, fases de delivery y mensajes, o al historial de pedidos.
 
 ### 7.2. Operación de un pedido
 
 1. La persona administradora consulta pedidos por estado, fecha o búsqueda.
 2. Revisa artículos, importe, dirección y contacto con acceso según permisos.
 3. Acepta, actualiza el estado o cancela indicando un motivo cuando aplique.
-4. Envía un mensaje contextualizado al pedido.
-5. El cliente recibe el cambio de estado y puede responder.
-6. Cada cambio queda auditado y es visible para los roles autorizados.
+4. Envía un mensaje contextualizado, clasificado por etapa y tipo de interacción.
+5. Para entrega física, asigna/reporta delivery y actualiza recojo, ruta y recepción; para contenido digital, prepara y comunica el acceso.
+6. Revisa la distribución de interacciones por fase y tipología para priorizar soporte.
+7. El cliente recibe el cambio de estado y puede responder o valorar el servicio.
+8. Cada cambio debe quedar auditado y ser visible solo para los roles autorizados en producción.
 
 ### 7.3. Creación de campaña
 
@@ -160,7 +164,7 @@ La prioridad usa MoSCoW: **Must** (necesario para producción), **Should** (alta
 
 | ID | Prioridad | Requisito | Criterio de aceptación |
 | --- | --- | --- | --- |
-| CAM-01 | Must | Mostrar campañas activas en una zona visible del catálogo. | El carrusel es operable por teclado, no rota automáticamente sin control y expone nombre, vigencia, beneficio y CTA. |
+| CAM-01 | Must | Mostrar campañas activas en una zona visible del catálogo. | El carrusel expone imagen, nombre, vigencia, beneficio y CTA; rota automáticamente solo con controles de pausa, anterior/siguiente y selección directa, se detiene al foco/hover y respeta reducir movimiento. |
 | CAM-02 | Must | Aplicar descuentos de campaña de manera consistente. | Precio original, descuento, precio final y condiciones son inequívocos en catálogo, carrito y checkout. |
 | CAM-03 | Must | Administrar campañas con fecha de inicio/fin, estado y productos. | No se pueden publicar campañas con fechas inválidas, productos inexistentes o reglas incompatibles. |
 | CAM-04 | Should | Medir desempeño de cada campaña. | Se muestran impresiones, clics, conversión, pedidos, ingreso atribuible y ventana temporal. |
@@ -172,10 +176,12 @@ La prioridad usa MoSCoW: **Must** (necesario para producción), **Should** (alta
 | --- | --- | --- | --- |
 | COM-01 | Must | Permitir añadir, ajustar y eliminar artículos del carrito. | Cantidad, subtotal, descuento, impuestos y total se recalculan correctamente y se anuncian de forma accesible. |
 | COM-02 | Must | Persistir el carrito de forma segura entre sesiones. | Un usuario autenticado recupera su carrito desde el servidor; se resuelven conflictos entre dispositivos. |
-| COM-03 | Must | Obtener datos de entrega y presentar el resumen final. | Los campos se validan antes del pago; dirección y costes se muestran antes de confirmar. |
+| COM-03 | Must | Obtener datos de entrega y presentar el resumen final. | Los campos se validan antes del pago; dirección, importe, descuentos, moneda y modalidad se muestran antes de confirmar. |
 | COM-04 | Must | Integrar un proveedor de pago conforme a regulación aplicable. | Datos de tarjeta no atraviesan ni se almacenan en Bazar Cultural; se usan tokenización, confirmación y manejo de errores. |
 | COM-05 | Must | Crear un pedido idempotente tras un pago aprobado. | Reintentos no duplican pedidos ni cargos; se conserva referencia del proveedor. |
 | COM-06 | Should | Soportar comprobantes, reembolsos y cancelaciones. | La persona recibe estado y comprobante; cada reembolso queda trazado. |
+| COM-07 | Must | Mostrar una confirmación postcompra y dirigir al seguimiento. | Tras crear el pedido, la persona ve identificador, fecha, total, modalidad y accesos al detalle, mensajes e historial. |
+| COM-08 | Should | Mostrar y registrar la conversión de moneda. | La UI permite USD/Bs, identifica la fuente BCB, fecha de vigencia y tipo de cambio aplicado al pedido en Bs; un cobro real lo confirma el proveedor. |
 
 ### 8.4. Cuenta, perfil y privacidad
 
@@ -185,30 +191,32 @@ La prioridad usa MoSCoW: **Must** (necesario para producción), **Should** (alta
 | ACC-02 | Must | Gestionar roles y permisos en servidor. | Un cliente no puede acceder ni modificar recursos administrativos, incluso alterando la interfaz. |
 | ACC-03 | Must | Permitir editar contacto, dirección y preferencias. | Los datos se validan, se guardan con confirmación y el usuario puede rectificarlos o eliminarlos conforme a política. |
 | ACC-04 | Must | Obtener consentimiento explícito para ubicación y comunicaciones. | Negar la ubicación no bloquea la compra; se explica para qué se usa y cómo retirarlo. |
-| ACC-05 | Should | Mostrar y gestionar métodos de pago tokenizados. | Nunca se muestra información sensible completa; el usuario puede quitar un método. |
+| ACC-05 | Should | Mostrar y gestionar métodos de pago tokenizados. | En el MVP se gestionan referencias locales de varios medios y uno predeterminado; nunca se muestra información sensible completa y el usuario puede quitar un método. Producción requiere tokenización del proveedor. |
 
 ### 8.5. Pedidos, administración y atención
 
 | ID | Prioridad | Requisito | Criterio de aceptación |
 | --- | --- | --- | --- |
-| ORD-01 | Must | Permitir al cliente ver solo sus propios pedidos. | El historial contiene fecha, artículos, total, estado, dirección permitida y acceso al detalle. |
+| ORD-01 | Must | Permitir al cliente ver solo sus propios pedidos. | El historial y la confirmación contienen fecha, artículos, total, estado, modalidad y acceso al detalle; el frontend impide navegar al detalle de otro cliente. |
 | ORD-02 | Must | Permitir a la administración buscar, filtrar y actualizar pedidos. | Filtros por estado, fecha y texto; cambios autorizados quedan auditados. |
 | ORD-03 | Must | Sincronizar cambios de estado con baja latencia. | Los eventos se propagan por WebSocket, SSE o polling controlado; la interfaz se recupera de desconexiones. |
 | ORD-04 | Should | Escalar el listado administrativo. | Paginación/infinite scroll y virtualización manejan el volumen objetivo sin degradar la interacción. |
-| MSG-01 | Must | Mantener una conversación asociada a un pedido. | Se valida participante, pedido y contenido; el historial ordena mensajes y marca lectura. |
+| ORD-05 | Should | Ofrecer seguimiento por modalidad de entrega. | El detalle presenta hitos de entrega digital o física; para física, muestra repartidor, progreso y mapa demostrativo claramente identificado como no geográfico. |
+| MSG-01 | Must | Mantener una conversación asociada a un pedido. | La conversación identifica visualmente cliente, equipo y delivery, ordena el historial y permite filtrar por etapa. En producción se valida participante, pedido y contenido en servidor. |
 | MSG-02 | Should | Notificar mensajes y cambios importantes. | Canales y consentimiento configurables; las notificaciones no revelan datos sensibles en la pantalla bloqueada. |
+| MSG-03 | Should | Clasificar interacciones y priorizar atención. | Todo mensaje nuevo registra etapa y tipología; administración ve gráfico de cantidad por fase, distribución por tipo y etapa de mayor actividad. |
 
 ## 9. Requisitos no funcionales
 
 | Área | Requisito verificable |
 | --- | --- |
-| Accesibilidad | Conformidad WCAG 2.2 nivel AA en flujos críticos; foco visible, navegación completa por teclado, semántica HTML, mensajes de error comprensibles, contraste suficiente y alternativas textuales. Se complementará Axe con pruebas manuales y lector de pantalla. |
+| Accesibilidad | Conformidad WCAG 2.2 nivel AA en flujos críticos; foco visible, navegación completa por teclado, semántica HTML, mensajes de error comprensibles, contraste suficiente y alternativas textuales. El carrusel debe poder pausarse, detenerse al foco y respetar `prefers-reduced-motion`. Se complementará Axe con pruebas manuales y lector de pantalla. |
 | Rendimiento | En conexiones móviles representativas, LCP ≤ 2.5 s, INP ≤ 200 ms y CLS ≤ 0.1 en páginas principales, medidos en percentil 75. Imágenes responsivas y comprimidas; código no crítico diferido. |
 | Disponibilidad | Objetivo inicial de disponibilidad mensual ≥ 99.5 % para catálogo y checkout, excluyendo mantenimientos anunciados. |
 | Seguridad | Aplicar prácticas OWASP ASVS apropiadas al nivel de riesgo: TLS, gestión de secretos, validación de entrada en servidor, control de acceso por recurso, protección contra CSRF/XSS, rate limiting, registros de seguridad y revisión de dependencias. |
-| Privacidad | Privacidad por diseño y por defecto; consentimiento granular, minimización, retención definida, exportación/eliminación cuando aplique y contrato de tratamiento con proveedores. Adecuar a la legislación de los mercados de operación. |
+| Privacidad | Privacidad por diseño y por defecto; consentimiento granular, minimización, retención definida, exportación/eliminación cuando aplique y contrato de tratamiento con proveedores. La ubicación real de delivery requiere consentimiento explícito, propósito limitado y controles de retención. Adecuar a la legislación de los mercados de operación. |
 | Compatibilidad | Últimas dos versiones estables de Chrome, Edge, Firefox y Safari; móvil desde 360 px de ancho; sin depender solo de hover o color. |
-| Localización | Español como idioma inicial; formatos de moneda, fecha, zona horaria e impuestos configurables. La arquitectura debe permitir traducciones posteriores. |
+| Localización | Español como idioma inicial; formatos de moneda, fecha, zona horaria e impuestos configurables. El MVP visualiza USD y Bs/BOB con cotización oficial BCB publicada como referencia. La arquitectura debe permitir traducciones posteriores. |
 | Observabilidad | Errores de frontend/backend, trazas de checkout, métricas de API, auditoría de cambios y alertas accionables sin registrar datos personales sensibles. |
 | Mantenibilidad | TypeScript estricto, arquitectura por funcionalidades, revisiones de código, cobertura de pruebas acordada y documentación de APIs/decisiones. |
 
@@ -216,7 +224,7 @@ La prioridad usa MoSCoW: **Must** (necesario para producción), **Should** (alta
 
 ### Entidades mínimas
 
-`User`, `Address`, `PaymentMethod`, `Product`, `ProductImage`, `Cart`, `CartItem`, `Order`, `OrderItem`, `Campaign`, `CampaignMetric`, `Message`, `InventoryReservation` y `AuditEvent`.
+`User`, `Address`, `PaymentMethod`, `Product`, `ProductImage`, `Cart`, `CartItem`, `Order`, `OrderItem`, `Campaign`, `CampaignMetric`, `Message`, `InteractionStage`, `InteractionType`, `DigitalDelivery`, `PhysicalDelivery`, `DeliveryEvent`, `ExchangeRate`, `InventoryReservation` y `AuditEvent`.
 
 Las entidades actuales de frontend se encuentran en [`src/types.ts`](../src/types.ts). En producción se deberán añadir identificadores inmutables, timestamps auditables, versiones para concurrencia, referencias de pago, impuestos, descuento aplicado, condiciones de venta y reglas de retención.
 
@@ -228,14 +236,20 @@ Las entidades actuales de frontend se encuentran en [`src/types.ts`](../src/type
 4. Los cambios de estado permitidos se controlan mediante una máquina de estados. Una transición inválida se rechaza y queda registrada.
 5. Solo participantes autorizados y personal con permiso pueden leer o enviar mensajes de un pedido.
 6. La atribución cultural (autoría, licencia, procedencia y restricciones) debe ser editable y visible cuando aplique.
+7. Las referencias de pago del MVP nunca contienen número completo de tarjeta/cuenta, CVV, PIN o contraseña. Una integración real usa tokenización externa.
+8. Los mensajes nuevos se clasifican con una etapa y una tipología; las actualizaciones de delivery se registran también como mensajes contextuales.
+9. La cotización USD/Bs publicada debe registrar fuente, fecha de vigencia y momento de obtención; el importe de un cobro real se confirma en el backend/proveedor.
+10. El mapa de delivery del MVP es una visualización de progreso y no debe presentarse como geolocalización real.
 
 ### Estados de pedido propuestos
 
 `PENDIENTE → ACEPTADO → EN_CAMINO → ENTREGADO`, con `CANCELADO` disponible desde los estados definidos por la política. Las transiciones, causas de cancelación y quién las ejecuta deben almacenarse en auditoría.
 
+Para delivery físico, el MVP visualiza `PENDIENTE → ASIGNADO → RECOGIDO → EN_RUTA → ENTREGADO`; para entrega digital, `PENDIENTE → PREPARANDO_ACCESO → ACCESO_ENVIADO → ENTREGADO`. Las etapas conversacionales son `CONSULTA`, `CONFIRMACION`, `PREPARACION`, `DESPACHO`, `EN_RUTA`, `RECEPCION` y `POSTENTREGA`.
+
 ## 11. Arquitectura y dependencias de producto
 
-La interfaz usa Vite, React, TypeScript, Tailwind CSS, React Router, TanStack Query, React Hook Form, Axios y React Window. La versión estática utiliza hash routing para funcionar en GitHub Pages y despliega automáticamente con GitHub Actions.
+La interfaz usa Vite, React, TypeScript, Tailwind CSS, React Router, TanStack Query, React Hook Form, Axios y React Window. La versión estática utiliza hash routing para funcionar en GitHub Pages y despliega automáticamente con GitHub Actions. Los datos demostrativos se mantienen en `localStorage`; el workflow de sincronización consulta la publicación oficial del BCB y versiona `exchange-rate.json` para el consumo desde el mismo origen.
 
 Para producción se requiere una arquitectura de servicios que incluya, como mínimo:
 
@@ -245,6 +259,7 @@ Para producción se requiere una arquitectura de servicios que incluya, como mí
 - Canal de eventos (WebSocket/SSE) y mecanismo de trabajos asíncronos para pagos, correos y notificaciones.
 - Integración de mapas/geocodificación evaluada según disponibilidad y privacidad.
 - Plataforma de analítica, monitoreo y gestión de errores con controles de consentimiento.
+- Servicio de tipo de cambio y reglas de moneda/fecha de corte acordadas con el proveedor de pagos.
 
 La definición de endpoints, contratos, errores y versionado se realizará mediante OpenAPI antes de integrar el backend. Ningún secreto, precio final, autorización o validación de inventario debe depender únicamente del cliente.
 
@@ -261,6 +276,10 @@ Los eventos deben tener un esquema versionado, evitar PII en propiedades analít
 | `checkout_started` / `checkout_completed` | pedido_id pseudonimizado, moneda, importe | Medir embudo sin exponer datos sensibles. |
 | `campaign_viewed` / `campaign_cta_clicked` | campaña_id, posición | Medir eficacia de campañas. |
 | `order_status_changed` | estado anterior/nuevo, origen | Identificar cuellos operativos. |
+| `order_confirmed` | pedido_id pseudonimizado, moneda, importe, modalidad_entrega | Medir confirmación postcompra y modalidad. |
+| `interaction_created` | pedido_id pseudonimizado, etapa, tipología, rol_emisor | Priorizar atención sin registrar contenido del mensaje. |
+| `delivery_phase_changed` | pedido_id pseudonimizado, modalidad, fase anterior/nueva | Identificar demoras de preparación, ruta y recepción. |
+| `carousel_viewed` / `carousel_advanced` / `carousel_paused` | campaña_id, posición, origen de avance | Evaluar descubrimiento de ofertas sin penalizar la accesibilidad. |
 
 ## 13. Calidad, pruebas y lanzamiento
 
@@ -271,10 +290,10 @@ Los eventos deben tener un esquema versionado, evitar PII en propiedades analít
 | Unitarias | Cálculos de carrito/descuentos, reglas de campaña, validadores, máquina de estados y adaptadores de API. |
 | Componentes | Formularios, errores, accesibilidad de controles, tarjetas y estados vacíos. |
 | Integración | API, autorización por recurso, inventario, pago simulado y eventos de pedido. |
-| E2E | Descubrimiento, compra, perfil, pedidos, campañas, mensajería y recuperación de fallos. |
+| E2E | Descubrimiento, carrusel, compra, confirmación postcompra, perfil, métodos de pago, pedidos, campañas, delivery físico/digital, mensajería, analítica administrativa y recuperación de fallos. |
 | No funcionales | Axe + revisión manual, Lighthouse, carga, seguridad, compatibilidad móvil y pruebas de recuperación. |
 
-La versión actual incorpora Playwright y Axe para flujos críticos. Antes de producción se añadirá Vitest para pruebas unitarias/componentes, además de ESLint, Prettier, pre-commit hooks y verificación de dependencias en CI.
+La versión actual incorpora Playwright y Axe para flujos críticos: 23 pruebas E2E cubren catálogo, carrusel, checkout, confirmación, métodos de pago, pedidos, campañas, delivery, mensajería y administración. Antes de producción se añadirá Vitest para pruebas unitarias/componentes, además de ESLint, Prettier, pre-commit hooks y verificación de dependencias en CI.
 
 ### Criterios de salida a producción
 
@@ -290,6 +309,7 @@ La versión actual incorpora Playwright y Axe para flujos críticos. Antes de pr
 
 | Fase | Resultado | Dependencias |
 | --- | --- | --- |
+| MVP frontend publicado | Catálogo, campañas, conversión USD/Bs referencial, checkout, confirmación, delivery demostrativo, mensajería y administración local. | GitHub Pages; no reemplaza servicios transaccionales. |
 | 0. Descubrimiento y diseño (2–4 semanas) | Validación de mercado, reglas comerciales, prototipos y métricas base. | Product Owner, legal, operaciones, diseño, aliados culturales. |
 | 1. Fundaciones de producción (3–5 semanas) | Backend, identidad, modelo de datos, OpenAPI, CI de calidad, observabilidad y migración desde mocks. | Decisiones de infraestructura e identidad. |
 | 2. Comercio transaccional (4–6 semanas) | Inventario, checkout seguro, pagos, comprobantes, pedidos y política de devoluciones. | Proveedor de pagos, fiscalidad y logística. |
@@ -309,13 +329,16 @@ Las estimaciones se revisarán tras definir equipo, mercados, integraciones y vo
 | Ofertas engañosas o inconsistentes. | Alto: pérdida de confianza. | Motor de precios centralizado, auditoría y términos de campaña visibles. |
 | Fuga de datos personales o de pago. | Crítico. | Minimización, tokenización, secreto gestionado, cifrado, pruebas de seguridad y respuesta a incidentes. |
 | Métricas sin consentimiento o sin contexto cultural. | Medio/alto. | Gobierno de datos, esquema aprobado y revisión de sesgos/impacto. |
+| Interpretar el mapa demostrativo como ubicación real. | Alto: expectativa incorrecta, privacidad y riesgo operativo. | Etiquetar la simulación, no exponer coordenadas reales y activar GPS solo con proveedor, consentimiento y controles de seguridad. |
+| Cotización BCB desactualizada o no disponible. | Medio/alto: precio referencial incorrecto. | Mostrar fuente/fecha, sincronizar en días hábiles, conservar último valor válido y confirmar el importe en el proveedor de pago. |
+| Movimiento automático que afecte la lectura. | Medio: barrera de accesibilidad. | Pausa visible, detención al foco/hover, `prefers-reduced-motion` y pruebas automatizadas/manuales. |
 
 ## 16. Preguntas abiertas
 
-1. ¿Cuál será el mercado inicial, moneda de cobro, idioma y régimen tributario?
+1. ¿Cuál será el mercado inicial, moneda de cobro/settlement, idioma y régimen tributario?
 2. ¿La plataforma operará como tienda propia, marketplace de terceros o modelo híbrido?
 3. ¿Qué productos son físicos, digitales, bajo demanda o experiencias con fecha?
-4. ¿Qué proveedor de pagos, facturación, logística, geocodificación y mensajería se aprobará?
+4. ¿Qué proveedor de pagos, facturación, logística, geocodificación, mensajería y tipo de cambio transaccional se aprobará?
 5. ¿Cuál es la política de derechos, licencias, atribución y revisión de contenido cultural?
 6. ¿Se debe ampliar el catálogo objetivo de los 20 productos actuales a 50 o a otra meta?
 7. ¿Qué SLA de soporte y devoluciones se comunicará al cliente?
