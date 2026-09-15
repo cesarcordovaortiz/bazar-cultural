@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "baseCurrency": "USD",
   "quoteCurrency": "BOB",
-  "rate": 11.53,
+  "rate": 10.99,
   "unit": "BOB por USD",
-  "publishedDate": "11 de Septiembre 2026",
-  "effectiveDate": "12 de Septiembre 2026",
+  "publishedDate": "14 de Septiembre 2026",
+  "effectiveDate": "15 de Septiembre 2026",
   "source": {
     "name": "Banco Central de Bolivia — Tipo de Cambio Oficial del dólar estadounidense",
     "url": "https://www.bcb.gob.bo/librerias/indicadores/dolar/bolsin.php"
   },
-  "retrievedAt": "2026-09-14T18:03:57.129Z"
+  "retrievedAt": "2026-09-15T16:55:06.981Z"
 }
